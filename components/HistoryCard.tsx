@@ -28,10 +28,10 @@ export default function HistoryCard({ entry }: { entry: HistoryEntry }) {
         <span className={`text-lg font-extrabold tabular-nums leading-none ${style.text}`}>
           {entry.score}
         </span>
-        <span className={`mt-0.5 text-[10px] font-bold ${style.text}`}>{style.label}</span>
+        <span className={`mt-0.5 text-[1.125rem] font-bold ${style.text}`}>{style.label}</span>
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[15px] font-semibold text-navy-900">{entry.preview}</p>
+        <p className="truncate text-[1.6875rem] font-semibold text-navy-900">{entry.preview}</p>
         <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-400">
           <span className="font-semibold text-slate-500">{entry.scamTypeLabel}</span>
           <span aria-hidden>·</span>

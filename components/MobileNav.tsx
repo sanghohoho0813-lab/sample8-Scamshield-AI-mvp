@@ -26,7 +26,7 @@ export default function MobileNav() {
             <Link
               key={href}
               href={href}
-              className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors ${
+              className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-[1.2375rem] font-medium transition-colors ${
                 active ? "text-brand-600" : "text-slate-400 hover:text-slate-600"
               }`}
               aria-current={active ? "page" : undefined}

@@ -27,7 +27,7 @@ export default function MessageInput({ value, onChange, onSubmit, error }: Messa
           rows={7}
           maxLength={2000}
           aria-label="분석할 문자 내용"
-          className="w-full resize-none rounded-2xl border border-line bg-white px-4 py-4 text-[15px] leading-relaxed text-slate-800 shadow-card outline-none transition-shadow placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+          className="w-full resize-none rounded-2xl border border-line bg-white px-4 py-4 text-[1.6875rem] leading-relaxed text-slate-800 shadow-card outline-none transition-shadow placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
         />
         <span className="pointer-events-none absolute bottom-3.5 right-4 text-xs tabular-nums text-slate-400">
           {value.length}/2,000
@@ -47,7 +47,7 @@ export default function MessageInput({ value, onChange, onSubmit, error }: Messa
             onClick={loadRandomSample}
             className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
           >
-            <WandSparkles className="h-4 w-4 text-brand-500" aria-hidden />
+            <WandSparkles className="h-4 w-4 text-violet-500" aria-hidden />
             샘플 불러오기
           </button>
           <button

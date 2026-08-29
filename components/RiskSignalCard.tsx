@@ -47,7 +47,7 @@ export default function RiskSignalCard({ signal }: { signal: RiskSignal }) {
           <Icon className="h-5 w-5" aria-hidden />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-[15px] font-bold text-navy-900">{signal.title}</span>
+          <span className="block text-[1.6875rem] font-bold text-navy-900">{signal.title}</span>
           <span className="mt-0.5 block truncate text-sm text-slate-500">
             {signal.matches.map((m) => `“${m}”`).join(" ")}
           </span>

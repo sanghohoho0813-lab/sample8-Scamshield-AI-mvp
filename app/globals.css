@@ -35,6 +35,30 @@
   --shadow-card-lg: 0 2px 4px rgba(16, 27, 63, 0.05), 0 16px 40px rgba(16, 27, 63, 0.1);
 
   --radius-card: 1.25rem;
+
+  /* 타이포그래피 스케일 ×1.8 (기본 Tailwind 크기의 1.8배) */
+  --text-xs: 1.35rem;
+  --text-xs--line-height: 1.8rem;
+  --text-sm: 1.575rem;
+  --text-sm--line-height: 2.25rem;
+  --text-base: 1.8rem;
+  --text-base--line-height: 2.7rem;
+  --text-lg: 2.025rem;
+  --text-lg--line-height: 3.15rem;
+  --text-xl: 2.25rem;
+  --text-xl--line-height: 3.15rem;
+  --text-2xl: 2.7rem;
+  --text-2xl--line-height: 3.6rem;
+  --text-3xl: 3.375rem;
+  --text-3xl--line-height: 4.05rem;
+  --text-4xl: 4.05rem;
+  --text-4xl--line-height: 4.5rem;
+  --text-5xl: 5.4rem;
+  --text-5xl--line-height: 1;
+  --text-6xl: 6.75rem;
+  --text-6xl--line-height: 1;
+  --text-7xl: 8.1rem;
+  --text-7xl--line-height: 1;
 }
 
 /* 글자 크기 접근성 설정 */

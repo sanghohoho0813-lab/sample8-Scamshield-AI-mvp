@@ -38,7 +38,7 @@ export default function HistoryDetailPage({ params }: { params: Promise<{ id: st
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
             <SearchX className="h-7 w-7" aria-hidden />
           </span>
-          <p className="mt-4 text-[15px] font-bold text-navy-900">기록을 찾을 수 없습니다.</p>
+          <p className="mt-4 text-[1.6875rem] font-bold text-navy-900">기록을 찾을 수 없습니다.</p>
           <p className="mt-1 text-sm text-slate-500">삭제되었거나 다른 기기에서 저장된 기록일 수 있어요.</p>
           <Link href="/analyze" className="btn-primary mt-5">
             새로 검사하기

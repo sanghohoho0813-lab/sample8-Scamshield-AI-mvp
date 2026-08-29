@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
+import DateTimeBar from "./DateTimeBar";
 
 const NAV_ITEMS = [
   { href: "/analyze", label: "검사하기" },
@@ -17,7 +18,8 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/85 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 md:h-16 md:px-6">
+      <DateTimeBar />
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-[4.5rem] md:px-6">
         <Link href="/" className="flex items-center gap-2" aria-label="ScamShield 홈">
           <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm">
             <ShieldCheck className="h-5 w-5" aria-hidden />
@@ -51,7 +53,7 @@ export default function Header() {
 
         <Link
           href="/analyze"
-          className="btn-primary !min-h-9 !rounded-lg !px-3.5 !py-1.5 text-sm md:hidden"
+          className="btn-primary !min-h-11 !rounded-xl !px-4 !py-2 text-sm md:hidden"
         >
           검사하기
         </Link>
