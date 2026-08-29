@@ -41,7 +41,7 @@ export default function HighlightedMessage({ message, highlights }: HighlightedM
 
   return (
     <div>
-      <p className="whitespace-pre-wrap break-all rounded-2xl bg-slate-50 px-4 py-4 text-[1.6875rem] leading-relaxed text-slate-800 md:px-5">
+      <p className="whitespace-pre-wrap break-all rounded-2xl bg-slate-50 px-4 py-4 text-[1.40625rem] leading-relaxed text-slate-800 md:px-5">
         {nodes}
       </p>
       {active ? (

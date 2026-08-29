@@ -103,7 +103,7 @@ export default function GuidePage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 md:py-10">
       <h1 className="text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">안전가이드</h1>
-      <p className="mt-2 text-[1.6875rem] text-slate-500">
+      <p className="mt-2 text-[1.40625rem] text-slate-500">
         유형별로 이런 문구를 조심하세요. 알고 있으면 당하지 않아요.
       </p>
 
@@ -115,7 +115,7 @@ export default function GuidePage() {
             <p className="mt-2 text-sm font-extrabold text-navy-900">{card.title}</p>
             <div className="mt-2 flex flex-wrap justify-center gap-1">
               {card.keywords.map((k) => (
-                <span key={k} className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[1.2375rem] font-semibold text-slate-600">
+                <span key={k} className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[1.03125rem] font-semibold text-slate-600">
                   {k}
                 </span>
               ))}
@@ -132,7 +132,7 @@ export default function GuidePage() {
               <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${guide.color}`}>
                 <guide.icon className="h-5.5 w-5.5" aria-hidden />
               </span>
-              <h2 className="text-[1.6875rem] font-extrabold text-navy-900 md:text-base">{guide.title}</h2>
+              <h2 className="text-[1.40625rem] font-extrabold text-navy-900 md:text-base">{guide.title}</h2>
             </div>
             <p className="mt-3 text-xs font-bold text-slate-400">이런 문구를 조심하세요</p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">

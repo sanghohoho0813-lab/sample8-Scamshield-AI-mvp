@@ -83,11 +83,11 @@ export default function ResultView({ result, onReset, animateGauge = true }: Res
 
       {/* AI 요약 */}
       <section className="card animate-fade-up px-4 py-5 md:px-6" style={{ animationDelay: "60ms" }}>
-        <h3 className="flex items-center gap-2 text-[1.6875rem] font-bold text-navy-900">
+        <h3 className="flex items-center gap-2 text-[1.40625rem] font-bold text-navy-900">
           <Sparkles className="h-4.5 w-4.5 text-violet-600" aria-hidden />
           AI 요약
         </h3>
-        <p className="mt-2.5 text-[1.6875rem] leading-relaxed text-slate-800 md:text-base">
+        <p className="mt-2.5 text-[1.40625rem] leading-relaxed text-slate-800 md:text-base">
           {result.summary}
         </p>
       </section>
@@ -100,7 +100,7 @@ export default function ResultView({ result, onReset, animateGauge = true }: Res
       {/* 발견된 위험 신호 */}
       {result.signals.length > 0 && (
         <section className="animate-fade-up" style={{ animationDelay: "180ms" }}>
-          <h3 className="mb-2.5 flex items-center gap-2 px-1 text-[1.6875rem] font-bold text-navy-900">
+          <h3 className="mb-2.5 flex items-center gap-2 px-1 text-[1.40625rem] font-bold text-navy-900">
             <AlertTriangle className="h-4.5 w-4.5 text-risk-high" aria-hidden />
             발견된 위험 신호 {result.signals.length}건
           </h3>
@@ -114,7 +114,7 @@ export default function ResultView({ result, onReset, animateGauge = true }: Res
 
       {/* 의심 문구 하이라이트 */}
       <section className="card animate-fade-up px-4 py-5 md:px-6" style={{ animationDelay: "240ms" }}>
-        <h3 className="flex items-center gap-2 text-[1.6875rem] font-bold text-navy-900">
+        <h3 className="flex items-center gap-2 text-[1.40625rem] font-bold text-navy-900">
           <MessageSquareText className="h-4.5 w-4.5 text-brand-600" aria-hidden />
           원문에서 의심되는 문구
         </h3>
@@ -126,7 +126,7 @@ export default function ResultView({ result, onReset, animateGauge = true }: Res
       {/* 링크 분석 */}
       {result.urls.length > 0 && (
         <section className="card animate-fade-up px-4 py-5 md:px-6" style={{ animationDelay: "300ms" }}>
-          <h3 className="flex items-center gap-2 text-[1.6875rem] font-bold text-navy-900">
+          <h3 className="flex items-center gap-2 text-[1.40625rem] font-bold text-navy-900">
             <Link2 className="h-4.5 w-4.5 text-teal-600" aria-hidden />
             링크 분석
           </h3>
@@ -162,7 +162,7 @@ export default function ResultView({ result, onReset, animateGauge = true }: Res
       {/* 연락처 분석 */}
       {result.phones.length > 0 && (
         <section className="card animate-fade-up px-4 py-5 md:px-6" style={{ animationDelay: "340ms" }}>
-          <h3 className="flex items-center gap-2 text-[1.6875rem] font-bold text-navy-900">
+          <h3 className="flex items-center gap-2 text-[1.40625rem] font-bold text-navy-900">
             <Phone className="h-4.5 w-4.5 text-emerald-600" aria-hidden />
             연락처 분석
           </h3>
@@ -198,7 +198,7 @@ export default function ResultView({ result, onReset, animateGauge = true }: Res
             <Users className="h-5 w-5" aria-hidden />
           </span>
           <div>
-            <p className="text-[1.6875rem] font-bold text-navy-900">가족에게 공유하기</p>
+            <p className="text-[1.40625rem] font-bold text-navy-900">가족에게 공유하기</p>
             <p className="mt-0.5 text-sm text-slate-500">
               부모님·가족에게 결과를 공유해 함께 확인해보세요.
             </p>
@@ -224,7 +224,7 @@ export default function ResultView({ result, onReset, animateGauge = true }: Res
       </section>
 
       {/* 고지 */}
-      <p className="flex gap-2 rounded-2xl border border-line bg-white/70 px-4 py-3.5 text-xs leading-relaxed text-slate-500 md:text-[1.4625rem]">
+      <p className="flex gap-2 rounded-2xl border border-line bg-white/70 px-4 py-3.5 text-xs leading-relaxed text-slate-500 md:text-[1.21875rem]">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" aria-hidden />
         이 결과는 참고용 위험 신호 분석이며 실제 사기 여부를 확정하는 판정이 아닙니다.
         금융기관·공공기관 등은 문자에 포함된 연락처가 아닌 공식 홈페이지나 공식 대표번호를 통해

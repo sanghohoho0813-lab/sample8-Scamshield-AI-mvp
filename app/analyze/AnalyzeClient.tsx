@@ -79,7 +79,7 @@ export default function AnalyzeClient() {
           <h1 className="text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">
             문자 검사하기
           </h1>
-          <p className="mt-2 text-[1.6875rem] text-slate-500">
+          <p className="mt-2 text-[1.40625rem] text-slate-500">
             의심스러운 문자 내용을 넣으면 AI가 위험 신호를 확인해드립니다.
           </p>
 

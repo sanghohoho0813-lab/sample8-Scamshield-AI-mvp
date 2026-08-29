@@ -54,7 +54,7 @@ export default function AboutPage() {
         <h1 className="mt-5 text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">
           ScamShield
         </h1>
-        <p className="mx-auto mt-3 max-w-xl text-[1.6875rem] leading-relaxed text-slate-600 md:text-base">
+        <p className="mx-auto mt-3 max-w-xl text-[1.40625rem] leading-relaxed text-slate-600 md:text-base">
           받은 문자나 메시지가 의심스러울 때, 내용을 넣으면 위험 신호를 쉽게 설명해주는
           <br className="hidden md:block" /> AI 안전보조 서비스입니다.
         </p>
@@ -66,7 +66,7 @@ export default function AboutPage() {
             <span className={`flex h-11 w-11 items-center justify-center rounded-2xl ${value.color}`}>
               <value.icon className="h-5.5 w-5.5" aria-hidden />
             </span>
-            <h2 className="mt-3 text-[1.6875rem] font-bold text-navy-900 md:text-base">{value.title}</h2>
+            <h2 className="mt-3 text-[1.40625rem] font-bold text-navy-900 md:text-base">{value.title}</h2>
             <p className="mt-1.5 text-sm leading-relaxed text-slate-500">{value.description}</p>
           </div>
         ))}
@@ -89,7 +89,7 @@ export default function AboutPage() {
             "긴급 송금 요구",
             "이벤트·쿠폰 위장",
           ].map((t) => (
-            <span key={t} className="rounded-lg bg-brand-50 px-2.5 py-1.5 text-[1.4625rem] font-semibold text-brand-700">
+            <span key={t} className="rounded-lg bg-brand-50 px-2.5 py-1.5 text-[1.21875rem] font-semibold text-brand-700">
               {t}
             </span>
           ))}

@@ -83,7 +83,7 @@ export default function ImageUploader({ onSubmit, error, onError }: ImageUploade
             <ImageUp className="h-7 w-7" aria-hidden />
           </span>
           <div>
-            <p className="text-[1.6875rem] font-bold text-navy-900">문자 캡처 이미지를 올려주세요</p>
+            <p className="text-[1.40625rem] font-bold text-navy-900">문자 캡처 이미지를 올려주세요</p>
             <p className="mt-1 text-sm text-slate-500">
               파일을 끌어다 놓거나 눌러서 선택 · PNG, JPG, JPEG
             </p>

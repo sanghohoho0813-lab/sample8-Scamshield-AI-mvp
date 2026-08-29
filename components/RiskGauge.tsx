@@ -55,7 +55,7 @@ export default function RiskGauge({ score, level, levelLabel, animate = true }: 
 
   return (
     <div className="flex flex-col items-center" role="img" aria-label={`위험도 ${score}점, ${levelLabel}`}>
-      <svg viewBox="0 0 200 112" className="w-80 max-w-full md:w-96" aria-hidden>
+      <svg viewBox="0 0 200 112" className="w-72 max-w-full md:w-80" aria-hidden>
         <path
           d="M 20 95 A 80 80 0 0 1 180 95"
           fill="none"
@@ -73,7 +73,7 @@ export default function RiskGauge({ score, level, levelLabel, animate = true }: 
           style={{ transition: "stroke 0.3s ease" }}
         />
       </svg>
-      <div className="-mt-28 flex flex-col items-center md:-mt-32">
+      <div className="-mt-24 flex flex-col items-center md:-mt-28">
         <div className="flex items-baseline gap-1">
           <span className="text-5xl font-extrabold tabular-nums tracking-tight md:text-6xl" style={{ color }}>
             {display}

@@ -90,7 +90,7 @@ export default function HomePage() {
             이 문자, 눌러도
             <br className="md:hidden" /> 괜찮을까요?
           </h1>
-          <p className="mt-4 max-w-xl text-[1.6875rem] leading-relaxed text-slate-600 md:text-lg">
+          <p className="mt-4 max-w-xl text-[1.40625rem] leading-relaxed text-slate-600 md:text-lg">
             의심스러운 문자나 링크를 넣으면
             <br className="md:hidden" /> 위험 신호를 쉽고 빠르게 확인해드립니다.
           </p>
@@ -119,12 +119,12 @@ export default function HomePage() {
             <div key={step.title} className="card flex items-start gap-4 px-5 py-5 md:flex-col md:gap-3 md:px-6 md:py-6">
               <span className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${step.color}`}>
                 <step.icon className="h-6 w-6" aria-hidden />
-                <span className={`absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full text-[1.2375rem] font-bold text-white ${step.badge}`}>
+                <span className={`absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full text-[1.03125rem] font-bold text-white ${step.badge}`}>
                   {i + 1}
                 </span>
               </span>
               <div>
-                <h3 className="text-[1.6875rem] font-bold text-navy-900 md:text-base">{step.title}</h3>
+                <h3 className="text-[1.40625rem] font-bold text-navy-900 md:text-base">{step.title}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-slate-500">{step.description}</p>
               </div>
             </div>
@@ -140,7 +140,7 @@ export default function HomePage() {
               <ImageUp className="h-5 w-5" aria-hidden />
               샘플 문자로 10초 체험
             </h2>
-            <p className="mt-1 text-sm text-brand-100 md:text-[1.6875rem]">
+            <p className="mt-1 text-sm text-brand-100 md:text-[1.40625rem]">
               실제 스미싱과 유사한 샘플로 분석 과정을 바로 확인해보세요.
             </p>
           </div>
@@ -158,7 +158,7 @@ export default function HomePage() {
                     aria-hidden
                   />
                 </p>
-                <p className="mt-1 line-clamp-2 text-[1.4625rem] leading-relaxed text-slate-500">
+                <p className="mt-1 line-clamp-2 text-[1.21875rem] leading-relaxed text-slate-500">
                   {sample.text}
                 </p>
               </Link>
@@ -175,12 +175,12 @@ export default function HomePage() {
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
                 <feature.icon className="h-5.5 w-5.5" aria-hidden />
               </span>
-              <h3 className="mt-3 text-[1.6875rem] font-bold text-navy-900">{feature.title}</h3>
+              <h3 className="mt-3 text-[1.40625rem] font-bold text-navy-900">{feature.title}</h3>
               <p className="mt-1 text-sm leading-relaxed text-slate-500">{feature.description}</p>
             </div>
           ))}
         </div>
-        <p className="mt-8 text-center text-xs leading-relaxed text-slate-400 md:text-[1.4625rem]">
+        <p className="mt-8 text-center text-xs leading-relaxed text-slate-400 md:text-[1.21875rem]">
           이 서비스의 결과는 참고용 위험 신호 분석이며 실제 사기 여부를 확정하는 판정이 아닙니다.
           <br className="hidden md:block" /> 금융기관·공공기관 등은 공식 홈페이지나 공식 대표번호를
           통해 직접 확인해주세요.

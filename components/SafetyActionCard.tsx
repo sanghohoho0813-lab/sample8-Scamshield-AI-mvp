@@ -11,7 +11,7 @@ export default function SafetyActionCard({ actions }: SafetyActionCardProps) {
     <section className="card overflow-hidden">
       <div className="flex items-center gap-2.5 border-b border-line bg-brand-600 px-4 py-3.5 md:px-5">
         <ShieldAlert className="h-5 w-5 text-white" aria-hidden />
-        <h3 className="text-[1.6875rem] font-bold text-white">지금 해야 할 행동</h3>
+        <h3 className="text-[1.40625rem] font-bold text-white">지금 해야 할 행동</h3>
       </div>
       <ol className="flex flex-col divide-y divide-line">
         {actions.map((action, i) => (
@@ -19,7 +19,7 @@ export default function SafetyActionCard({ actions }: SafetyActionCardProps) {
             <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xs font-bold text-brand-700">
               {i + 1}
             </span>
-            <p className="text-[1.6875rem] leading-relaxed text-slate-800">{action}</p>
+            <p className="text-[1.40625rem] leading-relaxed text-slate-800">{action}</p>
           </li>
         ))}
       </ol>

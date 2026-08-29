@@ -64,7 +64,7 @@ export default function MyPage() {
             <History className="h-5 w-5" aria-hidden />
           </span>
           <span className="flex-1">
-            <span className="block text-[1.6875rem] font-bold text-navy-900">분석 기록</span>
+            <span className="block text-[1.40625rem] font-bold text-navy-900">분석 기록</span>
             <span className="mt-0.5 block text-sm text-slate-500">
               {historyCount === null ? "불러오는 중…" : `저장된 기록 ${historyCount}건`}
             </span>
@@ -76,7 +76,7 @@ export default function MyPage() {
             <BookOpenText className="h-5 w-5" aria-hidden />
           </span>
           <span className="flex-1">
-            <span className="block text-[1.6875rem] font-bold text-navy-900">저장한 안전가이드</span>
+            <span className="block text-[1.40625rem] font-bold text-navy-900">저장한 안전가이드</span>
             <span className="mt-0.5 block text-sm text-slate-500">유형별 예방 수칙 모아보기</span>
           </span>
           <ChevronRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-0.5" aria-hidden />
@@ -85,7 +85,7 @@ export default function MyPage() {
 
       {/* 글자 크기 */}
       <section className="card mt-5 px-4 py-5 md:px-5">
-        <h2 className="flex items-center gap-2 text-[1.6875rem] font-bold text-navy-900">
+        <h2 className="flex items-center gap-2 text-[1.40625rem] font-bold text-navy-900">
           <ALargeSmall className="h-5 w-5 text-teal-600" aria-hidden />
           글자 크기
         </h2>
@@ -106,7 +106,7 @@ export default function MyPage() {
                   : "border-line bg-white text-slate-500 hover:border-brand-200"
               }`}
             >
-              <span className="font-extrabold" style={{ fontSize: `${(1 + i * 0.25) * 1.8}rem` }}>
+              <span className="font-extrabold" style={{ fontSize: `${(1 + i * 0.25) * 1.5}rem` }}>
                 {option.sample}
               </span>
               <span className="text-xs font-bold">{option.label}</span>
@@ -121,7 +121,7 @@ export default function MyPage() {
           <Bell className="h-5 w-5" aria-hidden />
         </span>
         <div className="flex-1">
-          <p className="text-[1.6875rem] font-bold text-navy-900">새 사기 유형 알림</p>
+          <p className="text-[1.40625rem] font-bold text-navy-900">새 사기 유형 알림</p>
           <p className="mt-0.5 text-sm text-slate-500">새로운 스미싱 수법이 알려지면 안내해드려요. (데모)</p>
         </div>
         <button
