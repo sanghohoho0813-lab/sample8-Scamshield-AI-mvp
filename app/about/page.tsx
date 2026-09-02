@@ -8,6 +8,7 @@ import {
   Smartphone,
   Users,
 } from "lucide-react";
+import { MiraeLogo } from "@/components/BrandMark";
 
 export const metadata: Metadata = {
   title: "서비스 소개",
@@ -93,6 +94,17 @@ export default function AboutPage() {
               {t}
             </span>
           ))}
+        </div>
+      </div>
+
+      <div className="card mt-8 flex flex-col items-center gap-4 px-6 py-8 text-center md:flex-row md:gap-7 md:px-8 md:text-left">
+        <MiraeLogo width={200} className="h-auto w-[184px] shrink-0 md:w-[200px]" />
+        <div>
+          <h2 className="text-[1.40625rem] font-extrabold text-navy-900 md:text-base">만든 곳</h2>
+          <p className="mt-1.5 text-sm leading-relaxed text-slate-500">
+            ScamShield는 미래에이아이랩(MIRAE AI LAB)이 기획·개발한 AI 안전보조 서비스입니다.
+            일상에서 마주치는 문제를 AI로 쉽게 풀어내는 제품을 만듭니다.
+          </p>
         </div>
       </div>
 

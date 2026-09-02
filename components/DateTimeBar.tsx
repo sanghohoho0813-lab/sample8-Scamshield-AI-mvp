@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CalendarDays, Clock3 } from "lucide-react";
+import { MiraeMark } from "./BrandMark";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -28,7 +29,12 @@ export default function DateTimeBar() {
 
   return (
     <div className="border-b border-line bg-white/70">
-      <div className="mx-auto flex h-10 max-w-6xl items-center justify-center gap-4 px-4 text-xs font-semibold text-slate-500 md:justify-end md:px-6">
+      <div className="mx-auto flex h-10 max-w-6xl items-center justify-center gap-4 px-4 text-xs font-semibold text-slate-500 md:justify-between md:px-6">
+        <span className="hidden items-center gap-1.5 text-slate-400 md:flex">
+          <MiraeMark size={18} className="h-[18px] w-[18px]" />
+          MIRAE AI LAB
+        </span>
+        <span className="flex items-center gap-4">
         {formatted ? (
           <>
             <span className="flex items-center gap-1.5">
@@ -43,6 +49,7 @@ export default function DateTimeBar() {
         ) : (
           <span className="skeleton h-5 w-64" aria-hidden />
         )}
+        </span>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SettingsProvider } from "@/lib/settings";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import MobileNav from "@/components/MobileNav";
 
 export const metadata: Metadata = {
@@ -33,7 +34,9 @@ export default function RootLayout({
       <body className="min-h-dvh">
         <SettingsProvider>
           <Header />
-          <main className="pb-24 md:pb-12">{children}</main>
+          <main>{children}</main>
+          <Footer />
+          <div className="h-16 md:hidden" aria-hidden />
           <MobileNav />
         </SettingsProvider>
       </body>

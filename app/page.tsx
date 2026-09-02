@@ -12,6 +12,7 @@ import {
   Users,
 } from "lucide-react";
 import { FEATURED_SAMPLES } from "@/lib/samples";
+import { MiraeMark } from "@/components/BrandMark";
 
 const FEATURES = [
   {
@@ -105,6 +106,10 @@ export default function HomePage() {
           </div>
           <p className="mt-4 text-xs text-slate-400">
             가입 없이 바로 사용 · 참고용 위험 신호 분석 서비스
+          </p>
+          <p className="mt-5 flex items-center gap-1.5 rounded-full border border-line bg-white/70 px-3 py-1.5 text-xs font-semibold text-slate-500">
+            <MiraeMark size={16} className="h-4 w-4" />
+            made by MIRAE AI LAB
           </p>
         </div>
       </section>
