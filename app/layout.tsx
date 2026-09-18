@@ -3,6 +3,7 @@ import "./globals.css";
 import { SettingsProvider } from "@/lib/settings";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SampleBridgeCTA from "@/components/SampleBridgeCTA";
 import MobileNav from "@/components/MobileNav";
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default function RootLayout({
         <SettingsProvider>
           <Header />
           <main>{children}</main>
+          <SampleBridgeCTA />
           <Footer />
           <div className="h-16 md:hidden" aria-hidden />
           <MobileNav />
