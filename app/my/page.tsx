@@ -2,175 +2,191 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  ALargeSmall,
-  Bell,
-  BookOpenText,
-  ChevronRight,
-  History,
-  Info,
-  Trash2,
-  UserRound,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { FontScale } from "@/lib/types";
 import { useSettings } from "@/lib/settings";
-import { clearHistory, getHistory } from "@/lib/storage";
+import { clearHistory, getHistory, restoreDemoHistory } from "@/lib/storage";
 import { useToast } from "@/components/Toast";
 
-const FONT_OPTIONS: { value: FontScale; label: string; sample: string }[] = [
-  { value: "normal", label: "보통 글자", sample: "가나다" },
-  { value: "large", label: "큰 글자", sample: "가나다" },
-  { value: "x-large", label: "매우 큰 글자", sample: "가나다" },
+const FONT_OPTIONS: { value: FontScale; label: string; size: string }[] = [
+  { value: "normal", label: "보통", size: "text-base" },
+  { value: "large", label: "크게", size: "text-lg" },
+  { value: "x-large", label: "아주 크게", size: "text-xl" },
 ];
 
-export default function MyPage() {
+type Pending = "clear" | "restore" | null;
+
+export default function SettingsPage() {
   const { fontScale, setFontScale } = useSettings();
   const { show, node: toastNode } = useToast();
-  const [historyCount, setHistoryCount] = useState<number | null>(null);
-  const [notifyDemo, setNotifyDemo] = useState(true);
-  const [confirmClear, setConfirmClear] = useState(false);
+  const [count, setCount] = useState<number | null>(null);
+  const [pending, setPending] = useState<Pending>(null);
 
   useEffect(() => {
-    setHistoryCount(getHistory().length);
+    setCount(getHistory().length);
   }, []);
 
-  const handleClear = () => {
-    if (!confirmClear) {
-      setConfirmClear(true);
-      return;
+  const confirmAction = () => {
+    if (pending === "clear") {
+      clearHistory();
+      setCount(0);
+      show("모든 기록을 삭제했어요.");
+    } else if (pending === "restore") {
+      setCount(restoreDemoHistory().length);
+      show("예시 기록으로 되돌렸어요.");
     }
-    clearHistory();
-    setHistoryCount(0);
-    setConfirmClear(false);
-    show("분석 기록을 모두 삭제했어요.");
+    setPending(null);
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 md:py-10">
-      <div className="flex items-center gap-3.5">
-        <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
-          <UserRound className="h-7 w-7" aria-hidden />
-        </span>
-        <div>
-          <h1 className="text-xl font-extrabold tracking-tight text-navy-900 md:text-2xl">마이페이지</h1>
-          <p className="mt-0.5 text-sm text-slate-500">데모 사용자 · 가입 없이 이용 중</p>
-        </div>
-      </div>
-
-      {/* 바로가기 */}
-      <div className="mt-6 flex flex-col gap-2.5">
-        <Link href="/history" className="card group flex items-center gap-3.5 px-4 py-4 transition-all hover:border-brand-200 hover:shadow-card-lg md:px-5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-            <History className="h-5 w-5" aria-hidden />
-          </span>
-          <span className="flex-1">
-            <span className="block text-[1.40625rem] font-bold text-navy-900">분석 기록</span>
-            <span className="mt-0.5 block text-sm text-slate-500">
-              {historyCount === null ? "불러오는 중…" : `저장된 기록 ${historyCount}건`}
-            </span>
-          </span>
-          <ChevronRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-0.5" aria-hidden />
-        </Link>
-        <Link href="/guide" className="card group flex items-center gap-3.5 px-4 py-4 transition-all hover:border-brand-200 hover:shadow-card-lg md:px-5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
-            <BookOpenText className="h-5 w-5" aria-hidden />
-          </span>
-          <span className="flex-1">
-            <span className="block text-[1.40625rem] font-bold text-navy-900">저장한 안전가이드</span>
-            <span className="mt-0.5 block text-sm text-slate-500">유형별 예방 수칙 모아보기</span>
-          </span>
-          <ChevronRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-0.5" aria-hidden />
-        </Link>
-      </div>
+    <div className="mx-auto max-w-2xl px-4 py-6 md:px-6 md:py-10">
+      <h1 className="text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">설정</h1>
 
       {/* 글자 크기 */}
-      <section className="card mt-5 px-4 py-5 md:px-5">
-        <h2 className="flex items-center gap-2 text-[1.40625rem] font-bold text-navy-900">
-          <ALargeSmall className="h-5 w-5 text-teal-600" aria-hidden />
+      <section aria-labelledby="font-heading" className="mt-7">
+        <h2 id="font-heading" className="text-lg font-bold text-navy-900">
           글자 크기
         </h2>
-        <p className="mt-1 text-sm text-slate-500">화면 전체의 글자 크기를 조절할 수 있어요.</p>
-        <div className="mt-3.5 grid grid-cols-3 gap-2">
-          {FONT_OPTIONS.map((option, i) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => {
-                setFontScale(option.value);
-                show(`${option.label}로 변경했어요.`);
-              }}
-              aria-pressed={fontScale === option.value}
-              className={`flex min-h-20 flex-col items-center justify-center gap-1 rounded-2xl border-2 px-2 py-3 transition-all ${
-                fontScale === option.value
-                  ? "border-brand-500 bg-brand-50 text-brand-700"
-                  : "border-line bg-white text-slate-500 hover:border-brand-200"
-              }`}
-            >
-              <span className="font-extrabold" style={{ fontSize: `${(1 + i * 0.25) * 1.5}rem` }}>
-                {option.sample}
-              </span>
-              <span className="text-xs font-bold">{option.label}</span>
-            </button>
-          ))}
+        <p className="mt-1 text-base text-slate-500">화면 전체의 글자를 더 크게 볼 수 있어요.</p>
+        <div className="mt-3 grid grid-cols-3 gap-2" role="radiogroup" aria-labelledby="font-heading">
+          {FONT_OPTIONS.map((option) => {
+            const selected = fontScale === option.value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => {
+                  setFontScale(option.value);
+                  show(`글자 크기를 '${option.label}'로 바꿨어요.`);
+                }}
+                className={`focus-ring flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border-2 px-2 transition-colors ${
+                  selected ? "border-brand-600 bg-brand-50 text-brand-700" : "border-line bg-white text-slate-600 hover:border-brand-200"
+                }`}
+              >
+                <span className={`font-extrabold ${option.size}`}>가나다</span>
+                <span className="text-sm font-semibold">{option.label}</span>
+              </button>
+            );
+          })}
         </div>
       </section>
 
-      {/* 알림 (데모) */}
-      <section className="card mt-5 flex items-center gap-3.5 px-4 py-4.5 md:px-5">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-          <Bell className="h-5 w-5" aria-hidden />
-        </span>
-        <div className="flex-1">
-          <p className="text-[1.40625rem] font-bold text-navy-900">새 사기 유형 알림</p>
-          <p className="mt-0.5 text-sm text-slate-500">새로운 스미싱 수법이 알려지면 안내해드려요. (데모)</p>
-        </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={notifyDemo}
-          aria-label="새 사기 유형 알림"
-          onClick={() => {
-            setNotifyDemo((v) => !v);
-            show(notifyDemo ? "알림을 껐어요." : "알림을 켰어요.", "info");
-          }}
-          className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
-            notifyDemo ? "bg-brand-600" : "bg-slate-300"
-          }`}
-        >
-          <span
-            className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all ${
-              notifyDemo ? "left-6" : "left-1"
-            }`}
+      {/* 기록 관리 */}
+      <section aria-labelledby="records-heading" className="mt-10">
+        <h2 id="records-heading" className="text-lg font-bold text-navy-900">
+          기록 관리
+        </h2>
+        <p className="mt-1 text-base text-slate-500">기록은 이 기기의 브라우저에만 저장되며, 서버로 전송되지 않습니다.</p>
+        <div className="card mt-3 divide-y divide-line overflow-hidden">
+          <Link href="/history" className="focus-ring flex min-h-14 items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
+            <span className="text-base font-semibold text-navy-900">분석 기록</span>
+            <span className="flex items-center gap-1 text-base text-slate-500">
+              {count === null ? "…" : `${count}건`}
+              <ChevronRight className="h-5 w-5 text-slate-300" aria-hidden />
+            </span>
+          </Link>
+          <SettingRow
+            title="예시 기록으로 되돌리기"
+            description="직접 검사한 기록은 지우고, 체험용 예시 기록 8건을 다시 채웁니다."
+            actionLabel="되돌리기"
+            onAction={() => setPending("restore")}
           />
-        </button>
+          <SettingRow
+            title="모든 기록 삭제"
+            description="저장된 검사 기록을 모두 지웁니다. 되돌릴 수 없어요."
+            actionLabel="삭제"
+            danger
+            disabled={count === 0}
+            onAction={() => setPending("clear")}
+          />
+        </div>
+
+        {pending && (
+          <div role="alertdialog" aria-labelledby="confirm-text" className="animate-fade-in mt-3 rounded-xl border border-line bg-white px-5 py-4">
+            <p id="confirm-text" className="text-base font-semibold text-navy-900">
+              {pending === "clear" ? `기록 ${count}건을 모두 삭제할까요?` : "예시 기록으로 되돌릴까요? 직접 검사한 기록은 사라집니다."}
+            </p>
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={confirmAction}
+                className={`focus-ring min-h-11 rounded-lg px-4 text-base font-semibold text-white ${
+                  pending === "clear" ? "bg-risk-very" : "bg-brand-600"
+                }`}
+              >
+                {pending === "clear" ? "삭제" : "되돌리기"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPending(null)}
+                className="focus-ring min-h-11 rounded-lg px-4 text-base font-semibold text-slate-600 hover:bg-slate-100"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
-      {/* 기록 삭제 */}
-      <section className="card mt-5 px-4 py-4.5 md:px-5">
-        <button
-          type="button"
-          onClick={handleClear}
-          className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-bold transition-colors ${
-            confirmClear
-              ? "bg-risk-very text-white"
-              : "bg-risk-very-bg text-risk-very hover:bg-red-100"
-          }`}
-        >
-          <Trash2 className="h-4 w-4" aria-hidden />
-          {confirmClear ? "정말 삭제할까요? 한 번 더 누르면 삭제됩니다" : "분석 기록 모두 삭제"}
-        </button>
-        <p className="mt-2 text-xs text-slate-400">
-          기록은 이 기기의 브라우저에만 저장되며, 서버로 전송되지 않습니다.
-        </p>
+      {/* 서비스 정보 */}
+      <section aria-labelledby="info-heading" className="mt-10">
+        <h2 id="info-heading" className="text-lg font-bold text-navy-900">
+          서비스 정보
+        </h2>
+        <dl className="card mt-3 divide-y divide-line overflow-hidden text-base">
+          <div className="flex items-center justify-between gap-4 px-5 py-3.5">
+            <dt className="text-slate-500">분석 방식</dt>
+            <dd className="text-right font-semibold text-navy-900">규칙 기반 데모 엔진</dd>
+          </div>
+          <div className="flex items-center justify-between gap-4 px-5 py-3.5">
+            <dt className="text-slate-500">캡처 이미지 인식</dt>
+            <dd className="text-right font-semibold text-navy-900">데모 OCR (예시 문장)</dd>
+          </div>
+          <Link href="/about" className="focus-ring flex min-h-14 items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
+            <span className="font-semibold text-navy-900">서비스 소개</span>
+            <ChevronRight className="h-5 w-5 text-slate-300" aria-hidden />
+          </Link>
+        </dl>
       </section>
-
-      <p className="mt-6 flex gap-2 rounded-2xl border border-line bg-white/70 px-4 py-3.5 text-xs leading-relaxed text-slate-500">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" aria-hidden />
-        ScamShield는 참고용 위험 신호 분석 서비스로, 실제 사기 여부를 확정하는 판정을 제공하지
-        않습니다.
-      </p>
 
       {toastNode}
+    </div>
+  );
+}
+
+function SettingRow({
+  title,
+  description,
+  actionLabel,
+  onAction,
+  danger = false,
+  disabled = false,
+}: {
+  title: string;
+  description: string;
+  actionLabel: string;
+  onAction: () => void;
+  danger?: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4 px-5 py-3.5">
+      <div className="min-w-0">
+        <p className="text-base font-semibold text-navy-900">{title}</p>
+        <p className="mt-0.5 text-sm text-slate-500">{description}</p>
+      </div>
+      <button
+        type="button"
+        onClick={onAction}
+        disabled={disabled}
+        className={`focus-ring min-h-11 shrink-0 rounded-lg border px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+          danger ? "border-red-200 text-risk-very hover:bg-risk-very-bg" : "border-line text-navy-800 hover:bg-slate-50"
+        }`}
+      >
+        {actionLabel}
+      </button>
     </div>
   );
 }

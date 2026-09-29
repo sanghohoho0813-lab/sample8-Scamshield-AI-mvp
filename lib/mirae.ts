@@ -17,7 +17,7 @@ export const MIRAE_LINKS = {
 
 /** CTA 문구 — 여기만 바꾸면 전체 반영 */
 export const MIRAE_COPY = {
-  badge: "MIRAE AI LAB",
+  badge: "미래AI랩 제안",
   headline: "이 샘플이 마음에 드셨다면,\n대표님 회사도 이렇게 설계해볼 수 있습니다.",
   credit: "이 샘플은 미래AI랩이 기획·제작했습니다",
   description:

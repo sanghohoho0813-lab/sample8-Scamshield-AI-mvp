@@ -86,6 +86,8 @@ export interface HistoryEntry {
   level: RiskLevel;
   scamType: ScamType;
   scamTypeLabel: string;
+  /** 가족에게 공유(또는 복사)한 시각 */
+  sharedAt?: string;
   result: AnalysisResult;
 }
 

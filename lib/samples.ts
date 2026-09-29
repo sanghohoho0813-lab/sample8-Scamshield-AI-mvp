@@ -83,8 +83,18 @@ export const SAMPLE_MESSAGES: SampleMessage[] = [
   },
 ];
 
-/** 홈·입력 화면에서 노출할 대표 샘플 6개 */
-export const FEATURED_SAMPLES = SAMPLE_MESSAGES.slice(0, 6).concat(SAMPLE_MESSAGES[10]).slice(0, 6);
+/** 입력 화면 "샘플로 체험" 칩: 짧은 이름 + 대표 샘플 (정상에 가까운 문자 포함) */
+export const FEATURED_SAMPLES: { chip: string; sample: SampleMessage }[] = [
+  { chip: "택배", sample: SAMPLE_MESSAGES[0] },
+  { chip: "은행", sample: SAMPLE_MESSAGES[1] },
+  { chip: "과태료", sample: SAMPLE_MESSAGES[2] },
+  { chip: "가족", sample: SAMPLE_MESSAGES[3] },
+  { chip: "투자", sample: SAMPLE_MESSAGES[4] },
+  { chip: "정상 문자", sample: SAMPLE_MESSAGES[10] },
+];
 
-/** 이미지 업로드 데모에서 "추출"되는 텍스트 */
+/**
+ * 캡처 이미지 업로드의 데모 OCR 결과.
+ * 실제 이미지 인식이 아니므로 화면에서 "데모 OCR"로 명시하고 사용자가 수정할 수 있게 한다.
+ */
 export const DEMO_EXTRACTED_TEXT = SAMPLE_MESSAGES[0].text;

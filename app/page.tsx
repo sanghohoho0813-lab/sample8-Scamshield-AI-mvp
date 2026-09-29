@@ -1,196 +1,100 @@
+import { Suspense } from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BookOpenText,
-  BrainCircuit,
-  ImageUp,
-  LockKeyhole,
-  MessageSquareText,
-  ScanSearch,
-  ShieldCheck,
-  Sparkles,
-  Users,
-} from "lucide-react";
-import { FEATURED_SAMPLES } from "@/lib/samples";
-import { MiraeMark } from "@/components/BrandMark";
+import { ArrowRight, Clock3, LockKeyhole, UserRoundCheck } from "lucide-react";
+import AnalyzeForm from "@/components/AnalyzeForm";
+import RecentChecks from "@/components/RecentChecks";
+import { GUIDES } from "@/lib/guides";
 
-const FEATURES = [
-  {
-    icon: BrainCircuit,
-    color: "bg-brand-50 text-brand-600",
-    title: "AI 기반 위험 신호 분석",
-    description: "최신 사기 패턴을 바탕으로 문자의 위험 신호를 종합해 알려드립니다.",
-  },
-  {
-    icon: LockKeyhole,
-    color: "bg-emerald-50 text-emerald-600",
-    title: "개인정보 보호",
-    description: "업로드한 이미지는 분석 후 저장하지 않아 안심하고 사용할 수 있습니다.",
-  },
-  {
-    icon: Users,
-    color: "bg-rose-50 text-rose-600",
-    title: "가족과 함께 보호",
-    description: "분석 결과를 원터치로 공유해 부모님·가족 모두가 예방할 수 있습니다.",
-  },
-  {
-    icon: BookOpenText,
-    color: "bg-amber-50 text-amber-600",
-    title: "지식으로 예방",
-    description: "다양한 사례와 안전가이드를 통해 스스로 예방 능력을 키웁니다.",
-  },
+const TRUST_POINTS = [
+  { icon: UserRoundCheck, text: "가입 없이 바로 검사" },
+  { icon: Clock3, text: "결과까지 약 3초" },
+  { icon: LockKeyhole, text: "입력한 문자는 이 기기에만 저장" },
 ];
 
-const STEPS = [
-  {
-    icon: MessageSquareText,
-    color: "bg-brand-50 text-brand-600",
-    badge: "bg-brand-600",
-    title: "문자 붙여넣기",
-    description: "받은 문자를 그대로 붙여넣거나 캡처 이미지를 올려주세요.",
-  },
-  {
-    icon: ScanSearch,
-    color: "bg-violet-50 text-violet-600",
-    badge: "bg-violet-600",
-    title: "AI 분석",
-    description: "사칭·압박 표현, 링크, 연락처 패턴을 몇 초 만에 확인합니다.",
-  },
-  {
-    icon: ShieldCheck,
-    color: "bg-emerald-50 text-emerald-600",
-    badge: "bg-emerald-600",
-    title: "행동 가이드",
-    description: "위험도와 함께 지금 해야 할 행동을 알기 쉽게 안내합니다.",
-  },
-];
+/** 홈에 노출할 대표 사기 유형 */
+const FEATURED_GUIDE_IDS = ["delivery", "finance", "family", "government"];
 
 export default function HomePage() {
+  const featuredGuides = GUIDES.filter((g) => FEATURED_GUIDE_IDS.includes(g.id));
+
   return (
-    <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-surface">
-        <div
-          className="pointer-events-none absolute -top-32 left-1/2 h-96 w-[52rem] -translate-x-1/2 rounded-full bg-brand-100/60 blur-3xl"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-teal-100/50 blur-3xl"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -right-24 top-48 h-72 w-72 rounded-full bg-violet-100/50 blur-3xl"
-          aria-hidden
-        />
-        <div className="relative mx-auto flex max-w-6xl flex-col items-center px-4 pb-12 pt-14 text-center md:px-6 md:pb-16 md:pt-20">
-          <span className="flex items-center gap-1.5 rounded-full border border-brand-200 bg-white px-3.5 py-1.5 text-xs font-bold text-brand-700 shadow-sm md:text-sm">
-            <Sparkles className="h-3.5 w-3.5" aria-hidden />
-            AI 사기문자·스미싱 위험도 판독
-          </span>
-          <h1 className="mt-5 text-3xl font-extrabold leading-tight tracking-tight text-navy-900 md:text-5xl">
-            이 문자, 눌러도
-            <br className="md:hidden" /> 괜찮을까요?
-          </h1>
-          <p className="mt-4 max-w-xl text-[1.40625rem] leading-relaxed text-slate-600 md:text-lg">
-            의심스러운 문자나 링크를 넣으면
-            <br className="md:hidden" /> 위험 신호를 쉽고 빠르게 확인해드립니다.
-          </p>
-          <div className="mt-7 flex w-full max-w-md flex-col gap-3 sm:flex-row">
-            <Link href="/analyze" className="btn-primary flex-1 text-base">
-              <ScanSearch className="h-5 w-5" aria-hidden />
-              문자 검사하기
-            </Link>
-            <Link href={`/analyze?sample=${FEATURED_SAMPLES[0].id}`} className="btn-secondary flex-1 text-base">
-              샘플 문자로 체험하기
-            </Link>
-          </div>
-          <p className="mt-4 text-xs text-slate-400">
-            가입 없이 바로 사용 · 참고용 위험 신호 분석 서비스
-          </p>
-          <p className="mt-5 flex items-center gap-1.5 rounded-full border border-line bg-white/70 px-3 py-1.5 text-xs font-semibold text-slate-500">
-            <MiraeMark size={16} className="h-4 w-4" />
-            made by MIRAE AI LAB
-          </p>
-        </div>
-      </section>
-
-      {/* 이용 순서 */}
-      <section className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14">
-        <h2 className="text-center text-xl font-extrabold tracking-tight text-navy-900 md:text-2xl">
-          10초면 충분해요
-        </h2>
-        <div className="mt-6 grid gap-3.5 md:mt-8 md:grid-cols-3 md:gap-5">
-          {STEPS.map((step, i) => (
-            <div key={step.title} className="card flex items-start gap-4 px-5 py-5 md:flex-col md:gap-3 md:px-6 md:py-6">
-              <span className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${step.color}`}>
-                <step.icon className="h-6 w-6" aria-hidden />
-                <span className={`absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full text-[1.03125rem] font-bold text-white ${step.badge}`}>
-                  {i + 1}
-                </span>
-              </span>
-              <div>
-                <h3 className="text-[1.40625rem] font-bold text-navy-900 md:text-base">{step.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-slate-500">{step.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 샘플 체험 */}
-      <section className="mx-auto max-w-6xl px-4 pb-10 md:px-6 md:pb-14">
-        <div className="card overflow-hidden">
-          <div className="border-b border-line bg-gradient-to-r from-brand-600 to-brand-500 px-5 py-6 text-white md:px-8 md:py-7">
-            <h2 className="flex items-center gap-2 text-lg font-extrabold md:text-xl">
-              <ImageUp className="h-5 w-5" aria-hidden />
-              샘플 문자로 10초 체험
-            </h2>
-            <p className="mt-1 text-sm text-brand-100 md:text-[1.40625rem]">
-              실제 스미싱과 유사한 샘플로 분석 과정을 바로 확인해보세요.
+    <>
+      {/* Hero + 입력 */}
+      <section className="border-b border-line bg-white">
+        <div className="mx-auto grid max-w-6xl gap-6 px-4 pb-10 pt-7 md:px-6 md:pb-14 md:pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:gap-x-16 lg:pt-16">
+          <div className="lg:pt-8">
+            <p className="text-sm font-bold text-brand-700">문자·스미싱 위험 신호 검사</p>
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-navy-900 md:text-4xl lg:text-5xl">
+              이 문자, 눌러도
+              <br /> 괜찮을까요?
+            </h1>
+            <p className="mt-3 max-w-md text-base text-slate-600 md:text-lg">
+              받은 문자를 붙여넣으면 위험 신호와 지금 해야 할 행동을 쉽게 알려드려요.
             </p>
+            <ul className="mt-8 hidden flex-col gap-3 lg:flex">
+              {TRUST_POINTS.map(({ icon: Icon, text }) => (
+                <li key={text} className="flex items-center gap-2.5 text-base text-slate-600">
+                  <Icon className="h-5 w-5 text-brand-600" aria-hidden />
+                  {text}
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="grid gap-2.5 px-4 py-5 sm:grid-cols-2 md:grid-cols-3 md:gap-3 md:px-6">
-            {FEATURED_SAMPLES.map((sample) => (
-              <Link
-                key={sample.id}
-                href={`/analyze?sample=${sample.id}`}
-                className="group rounded-2xl border border-line bg-white px-4 py-3.5 transition-all hover:border-brand-300 hover:shadow-card"
-              >
-                <p className="flex items-center justify-between text-sm font-bold text-navy-900">
-                  {sample.label}
-                  <ArrowRight
-                    className="h-4 w-4 text-slate-300 transition-all group-hover:translate-x-0.5 group-hover:text-brand-500"
-                    aria-hidden
-                  />
-                </p>
-                <p className="mt-1 line-clamp-2 text-[1.21875rem] leading-relaxed text-slate-500">
-                  {sample.text}
-                </p>
-              </Link>
+
+          <div className="lg:row-span-2">
+            <Suspense fallback={<div className="card h-[26rem] p-6" aria-hidden />}>
+              <AnalyzeForm />
+            </Suspense>
+          </div>
+
+          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 lg:hidden">
+            {TRUST_POINTS.map(({ icon: Icon, text }) => (
+              <li key={text} className="flex items-center gap-1.5 text-sm text-slate-500">
+                <Icon className="h-4 w-4 text-brand-600" aria-hidden />
+                {text}
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* 특징 */}
-      <section className="mx-auto max-w-6xl px-4 pb-12 md:px-6 md:pb-16">
-        <div className="grid gap-3.5 sm:grid-cols-2 md:grid-cols-4 md:gap-5">
-          {FEATURES.map((feature) => (
-            <div key={feature.title} className="card px-5 py-5 md:px-6 md:py-6">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
-                <feature.icon className="h-5.5 w-5.5" aria-hidden />
-              </span>
-              <h3 className="mt-3 text-[1.40625rem] font-bold text-navy-900">{feature.title}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-slate-500">{feature.description}</p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-8 text-center text-xs leading-relaxed text-slate-400 md:text-[1.21875rem]">
-          이 서비스의 결과는 참고용 위험 신호 분석이며 실제 사기 여부를 확정하는 판정이 아닙니다.
-          <br className="hidden md:block" /> 금융기관·공공기관 등은 공식 홈페이지나 공식 대표번호를
-          통해 직접 확인해주세요.
-        </p>
-      </section>
-    </div>
+      <div className="mx-auto flex max-w-6xl flex-col gap-12 px-4 py-10 md:px-6 md:py-14 lg:grid lg:grid-cols-2 lg:gap-10">
+        <RecentChecks />
+
+        {/* 자주 오는 사기 유형 */}
+        <section aria-labelledby="types-heading">
+          <div className="flex items-end justify-between gap-3">
+            <h2 id="types-heading" className="text-xl font-bold text-navy-900">
+              요즘 많이 오는 사기 문자
+            </h2>
+            <Link href="/guide" className="focus-ring inline-flex min-h-11 items-center gap-1 rounded-lg text-sm font-semibold text-brand-700 hover:text-brand-800">
+              가이드 전체
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
+          <ul className="card mt-3 divide-y divide-line overflow-hidden">
+            {featuredGuides.map((guide) => (
+              <li key={guide.id}>
+                <Link
+                  href={`/guide#${guide.id}`}
+                  className="focus-ring group flex items-center gap-3.5 px-4 py-3.5 transition-colors hover:bg-slate-50 md:px-5"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+                    <guide.icon className="h-5 w-5" aria-hidden />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base font-semibold text-navy-900">{guide.title}</span>
+                    <span className="mt-0.5 block truncate text-sm text-slate-500">
+                      {guide.phrases.map((p) => `“${p}”`).join(" ")}
+                    </span>
+                  </span>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 group-hover:text-slate-500" aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </>
   );
 }

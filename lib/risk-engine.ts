@@ -305,13 +305,14 @@ const CATEGORY_SUMMARY_FRAGMENTS: Record<SignalCategory, string> = {
 
 function buildSummary(level: RiskLevel, scamType: ScamType, signals: RiskSignal[]): string {
   if (level === "low") {
-    return "이 문자에서는 강한 위험 신호가 발견되지 않았습니다. 다만 발신처가 확실하지 않다면, 링크나 회신 전에 공식 채널에서 한 번 더 확인하는 것이 안전합니다.";
+    return "이번 분석에서는 사칭·압박 표현이나 의심 링크 같은 강한 위험 신호가 발견되지 않았습니다.";
   }
   const parts = signals.slice(0, 3).map((s) => CATEGORY_SUMMARY_FRAGMENTS[s.category]);
   const joined = parts.join(", ").replace(/하고$/, "하고 있어");
   const typePrefix =
     scamType === "normal" ? "이 문자는" : `이 문자는 ${SCAM_TYPE_LABELS[scamType].replace(" 의심", "")} 유형으로,`;
-  return `${typePrefix} ${joined} 주의가 필요합니다. 문자에 안내된 링크나 번호 대신, 해당 기관의 공식 홈페이지나 대표번호를 통해 직접 확인해주세요.`;
+  // 요약은 "왜 위험한가"만 담고, 무엇을 할지는 행동 가이드(actions)가 담당한다
+  return `${typePrefix} ${joined} 주의가 필요합니다.`;
 }
 
 function buildActions(level: RiskLevel, result: { urls: UrlFinding[]; phones: PhoneFinding[]; signals: RiskSignal[] }): string[] {

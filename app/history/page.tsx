@@ -2,52 +2,87 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Inbox, ScanSearch } from "lucide-react";
+import { Inbox } from "lucide-react";
 import type { HistoryEntry } from "@/lib/types";
-import { getHistory } from "@/lib/storage";
-import HistoryCard from "@/components/HistoryCard";
+import { getHistory, restoreDemoHistory } from "@/lib/storage";
+import HistoryRow from "@/components/HistoryRow";
+import { useToast } from "@/components/Toast";
 
 export default function HistoryPage() {
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
+  const [now, setNow] = useState(0);
+  const { show, node: toastNode } = useToast();
 
   useEffect(() => {
     setEntries(getHistory());
-  }, []);
+    setNow(Date.now());
+    if (new URLSearchParams(window.location.search).get("deleted") === "1") {
+      show("기록을 삭제했어요.");
+      window.history.replaceState(null, "", "/history");
+    }
+  }, [show]);
+
+  const restore = () => {
+    setEntries(restoreDemoHistory());
+    setNow(Date.now());
+    show("예시 기록 8건을 불러왔어요.");
+  };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 md:py-10">
+    <div className="mx-auto max-w-3xl px-4 py-6 md:px-6 md:py-10">
       <h1 className="text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">분석 기록</h1>
-      <p className="mt-2 text-[1.40625rem] text-slate-500">
-        이전에 검사한 문자의 위험도를 다시 확인할 수 있어요.
+      <p className="mt-1.5 text-base text-slate-500">
+        {entries && entries.length > 0
+          ? `이 기기에 저장된 검사 ${entries.length}건 · 눌러서 결과를 다시 볼 수 있어요.`
+          : "검사한 문자의 결과를 다시 확인할 수 있어요."}
       </p>
 
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="mt-6">
         {entries === null ? (
-          <>
-            <div className="skeleton h-20 w-full" />
-            <div className="skeleton h-20 w-full" />
-            <div className="skeleton h-20 w-full" />
-          </>
+          <div className="card divide-y divide-line overflow-hidden" aria-busy="true">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-3.5 px-4 py-3.5 md:px-5" aria-hidden>
+                <div className="skeleton h-12 w-12 rounded-xl" />
+                <div className="flex-1 space-y-2">
+                  <div className="skeleton h-4 w-3/4" />
+                  <div className="skeleton h-3.5 w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : entries.length === 0 ? (
-          <div className="card animate-fade-up flex flex-col items-center px-6 py-14 text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-              <Inbox className="h-7 w-7" aria-hidden />
-            </span>
-            <p className="mt-4 text-[1.40625rem] font-bold text-navy-900">아직 검사한 메시지가 없습니다.</p>
-            <p className="mt-1 text-sm text-slate-500">의심스러운 문자를 넣고 위험 신호를 확인해보세요.</p>
-            <Link href="/analyze" className="btn-primary mt-5">
-              <ScanSearch className="h-4 w-4" aria-hidden />
-              첫 문자 검사하기
-            </Link>
+          <div className="card flex flex-col items-center px-6 py-14 text-center">
+            <Inbox className="h-10 w-10 text-slate-300" aria-hidden />
+            <h2 className="mt-4 text-lg font-bold text-navy-900">아직 검사한 메시지가 없습니다.</h2>
+            <p className="mt-1.5 text-base text-slate-500">의심스러운 문자를 넣고 위험 신호를 확인해보세요.</p>
+            <div className="mt-6 flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
+              <Link href="/" className="btn-primary">
+                첫 문자 검사하기
+              </Link>
+              <button type="button" onClick={restore} className="btn-secondary">
+                예시 기록 불러오기
+              </button>
+            </div>
           </div>
         ) : (
-          entries.map((entry, i) => (
-            <div key={entry.id} className="animate-fade-up" style={{ animationDelay: `${Math.min(i * 40, 240)}ms` }}>
-              <HistoryCard entry={entry} />
-            </div>
-          ))
+          <div className="card animate-fade-in divide-y divide-line overflow-hidden">
+            {entries.map((entry) => (
+              <HistoryRow key={entry.id} entry={entry} now={now} />
+            ))}
+          </div>
         )}
       </div>
+
+      {entries && entries.length > 0 && (
+        <p className="mt-4 text-sm text-slate-500">
+          기록은 이 기기의 브라우저에만 저장됩니다. 기록 정리는{" "}
+          <Link href="/my" className="font-semibold text-brand-700 underline-offset-4 hover:underline">
+            설정
+          </Link>
+          에서 할 수 있어요.
+        </p>
+      )}
+      {toastNode}
     </div>
   );
 }

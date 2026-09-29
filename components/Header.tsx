@@ -2,61 +2,58 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShieldCheck } from "lucide-react";
+import { Settings, ShieldCheck } from "lucide-react";
 import DateTimeBar from "./DateTimeBar";
 
 const NAV_ITEMS = [
-  { href: "/analyze", label: "검사하기" },
-  { href: "/guide", label: "안전가이드" },
-  { href: "/history", label: "분석기록" },
-  { href: "/about", label: "서비스 소개" },
-  { href: "/my", label: "마이페이지" },
+  { href: "/", label: "문자 검사", match: (p: string) => p === "/" },
+  { href: "/history", label: "분석 기록", match: (p: string) => p.startsWith("/history") || p.startsWith("/result") },
+  { href: "/guide", label: "안전 가이드", match: (p: string) => p.startsWith("/guide") },
 ];
 
 export default function Header() {
   const pathname = usePathname();
+  const settingsActive = pathname.startsWith("/my");
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur-md">
       <DateTimeBar />
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-[4.5rem] md:px-6">
-        <Link href="/" className="flex items-center gap-2" aria-label="ScamShield 홈">
-          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 md:h-16 md:px-6">
+        <Link href="/" className="focus-ring flex items-center gap-2 rounded-lg" aria-label="ScamShield 홈">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white">
             <ShieldCheck className="h-5 w-5" aria-hidden />
           </span>
-          <span className="text-lg font-bold tracking-tight text-navy-900">
-            ScamShield
-          </span>
+          <span className="text-lg font-bold tracking-tight text-navy-900">ScamShield</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="주요 메뉴">
           {NAV_ITEMS.map((item) => {
-            const active =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
+            const active = item.match(pathname);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-brand-50 text-brand-700"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-navy-900"
+                aria-current={active ? "page" : undefined}
+                className={`focus-ring rounded-lg px-3.5 py-2 text-base font-semibold transition-colors ${
+                  active ? "text-brand-700" : "text-slate-500 hover:text-navy-900"
                 }`}
               >
                 {item.label}
               </Link>
             );
           })}
+          <span className="mx-2 h-5 w-px bg-line" aria-hidden />
+          <Link
+            href="/my"
+            aria-current={settingsActive ? "page" : undefined}
+            className={`focus-ring flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+              settingsActive ? "text-brand-700" : "text-slate-500 hover:text-navy-900"
+            }`}
+          >
+            <Settings className="h-4 w-4" aria-hidden />
+            설정
+          </Link>
         </nav>
-
-        <Link
-          href="/analyze"
-          className="btn-primary !min-h-11 !rounded-xl !px-4 !py-2 text-sm md:hidden"
-        >
-          검사하기
-        </Link>
       </div>
     </header>
   );

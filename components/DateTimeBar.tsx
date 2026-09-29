@@ -1,22 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarDays, Clock3 } from "lucide-react";
 import { MiraeMark } from "./BrandMark";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+const pad = (n: number) => String(n).padStart(2, "0");
 
-function format(now: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return {
-    date: `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 (${WEEKDAYS[now.getDay()]})`,
-    time: `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`,
-  };
-}
-
-/** 상단 실시간 날짜·요일·시각(초 단위) 표시 바 */
+/**
+ * 데스크톱 전용 상단 브랜드 바: 제작사 표기 + 오늘 날짜·요일·현재 시각(초).
+ * 모바일에서는 콘텐츠 공간을 위해 표시하지 않는다.
+ */
 export default function DateTimeBar() {
-  // 서버-클라이언트 hydration 불일치를 피하기 위해 마운트 후에만 시간 표시
+  // hydration 불일치를 피하기 위해 마운트 후에만 시각 표시
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -25,30 +20,17 @@ export default function DateTimeBar() {
     return () => clearInterval(timer);
   }, []);
 
-  const formatted = now ? format(now) : null;
-
   return (
-    <div className="border-b border-line bg-white/70">
-      <div className="mx-auto flex h-10 max-w-6xl items-center justify-center gap-4 px-4 text-xs font-semibold text-slate-500 md:justify-between md:px-6">
-        <span className="hidden items-center gap-1.5 text-slate-400 md:flex">
-          <MiraeMark size={18} className="h-[18px] w-[18px]" />
+    <div className="hidden border-b border-line/70 bg-surface/60 md:block">
+      <div className="mx-auto flex h-8 max-w-6xl items-center justify-between px-6 text-xs text-slate-400">
+        <span className="flex items-center gap-1.5 font-semibold">
+          <MiraeMark size={14} className="h-3.5 w-3.5" />
           MIRAE AI LAB
         </span>
-        <span className="flex items-center gap-4">
-        {formatted ? (
-          <>
-            <span className="flex items-center gap-1.5">
-              <CalendarDays className="h-4 w-4 text-brand-500" aria-hidden />
-              {formatted.date}
-            </span>
-            <span className="flex items-center gap-1.5 tabular-nums">
-              <Clock3 className="h-4 w-4 text-teal-600" aria-hidden />
-              {formatted.time}
-            </span>
-          </>
-        ) : (
-          <span className="skeleton h-5 w-64" aria-hidden />
-        )}
+        <span className="tabular-nums" aria-live="off">
+          {now
+            ? `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())} (${WEEKDAYS[now.getDay()]}) ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+            : " "}
         </span>
       </div>
     </div>

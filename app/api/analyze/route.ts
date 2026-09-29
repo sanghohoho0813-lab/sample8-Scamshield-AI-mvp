@@ -4,8 +4,9 @@ import { analyzeMessageDemo } from "@/lib/risk-engine";
 /**
  * 분석 API.
  *
- * AI_API_KEY가 설정되어 있으면 이 지점에서 실제 LLM API 호출로 교체할 수 있도록
- * 분리해두었다. 키가 없거나 호출에 실패하면 Demo Analysis Engine을 사용한다.
+ * 현재는 규칙 기반 Demo Analysis Engine으로 분석한다. (engine: "demo")
+ * 실제 LLM을 연결할 때는 AI_API_KEY가 있는 경우 이 지점에서 LLM을 호출해
+ * summary·actions를 보강하고, 실제로 호출에 성공했을 때만 engine을 "ai"로 표시한다.
  */
 export async function POST(request: Request) {
   let body: { message?: string; source?: "text" | "image" };
@@ -19,15 +20,10 @@ export async function POST(request: Request) {
   if (!message) {
     return NextResponse.json({ error: "분석할 문자 내용을 입력해주세요." }, { status: 400 });
   }
-
-  const source = body.source === "image" ? "image" : "text";
-  const result = analyzeMessageDemo(message, source);
-
-  if (process.env.AI_API_KEY) {
-    // TODO: 실제 LLM API 연동 지점.
-    // 데모 엔진 결과를 기반으로 summary/actions를 LLM으로 보강하는 구조를 권장.
-    result.engine = "ai";
+  if (message.length > 2000) {
+    return NextResponse.json({ error: "문자는 2,000자까지 분석할 수 있습니다." }, { status: 400 });
   }
 
-  return NextResponse.json(result);
+  const source = body.source === "image" ? "image" : "text";
+  return NextResponse.json(analyzeMessageDemo(message, source));
 }

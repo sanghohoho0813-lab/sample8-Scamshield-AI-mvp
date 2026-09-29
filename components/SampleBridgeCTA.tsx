@@ -1,6 +1,5 @@
-import { ArrowUpRight, LayoutGrid, Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { MIRAE_COPY, MIRAE_LINKS } from "@/lib/mirae";
-import { MiraeMark } from "./BrandMark";
 
 interface SampleBridgeCTAProps {
   /** 메인 CTA(우리 회사도 만들어보기) 링크 */
@@ -27,79 +26,52 @@ export default function SampleBridgeCTA({
   return (
     <section
       aria-labelledby="mirae-bridge-heading"
-      className={`mx-auto max-w-4xl px-4 pb-12 pt-4 md:px-6 md:pb-16 md:pt-8 ${className}`}
+      className={`mx-auto max-w-6xl px-4 pb-12 pt-6 md:px-6 md:pb-16 md:pt-10 ${className}`}
     >
-      <div className="relative overflow-hidden rounded-[1.75rem] border border-brand-100 bg-gradient-to-br from-white via-brand-50/50 to-teal-50/40 px-5 py-8 shadow-card sm:px-8 md:px-12 md:py-12">
-        {/* 은은한 배경 광원 */}
-        <div
-          className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-brand-100/40 blur-3xl"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-teal-100/40 blur-3xl"
-          aria-hidden
-        />
+      <div className="rounded-3xl border border-brand-100 bg-gradient-to-b from-brand-50/70 to-white px-5 py-9 text-center md:px-12 md:py-12">
+        <p className="text-sm font-bold tracking-wide text-brand-700">{MIRAE_COPY.badge}</p>
 
-        <div className="relative flex flex-col items-center text-center">
-          {/* 1. 배지 */}
-          <span className="badge-shimmer inline-flex items-center gap-1.5 rounded-full border border-brand-200/80 bg-white/80 px-3.5 py-1.5 text-xs font-bold tracking-wide text-brand-700 shadow-sm">
-            <MiraeMark size={15} className="h-[15px] w-[15px]" />
-            {MIRAE_COPY.badge}
-          </span>
+        <h2
+          id="mirae-bridge-heading"
+          className="mx-auto mt-3 max-w-2xl text-xl font-extrabold leading-snug tracking-tight text-navy-900 md:whitespace-pre-line md:text-2xl"
+        >
+          {MIRAE_COPY.headline}
+        </h2>
 
-          {/* 2. 헤드라인 */}
-          <h2
-            id="mirae-bridge-heading"
-            className="mt-5 break-keep text-lg font-extrabold leading-snug tracking-tight text-navy-900 md:whitespace-pre-line md:text-2xl"
-          >
-            {MIRAE_COPY.headline}
-          </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
+          <strong className="font-bold text-navy-800">{MIRAE_COPY.credit}.</strong>{" "}
+          {MIRAE_COPY.description}
+        </p>
 
-          {/* 3. 미래AI랩 소개 */}
-          <p className="mt-4 break-keep text-sm font-bold text-brand-700 md:text-base">
-            {MIRAE_COPY.credit}
-          </p>
-          <p className="mt-2 max-w-2xl break-keep text-sm leading-relaxed text-slate-500">
-            {MIRAE_COPY.description}
-          </p>
-
-          {/* 4. 메인 CTA */}
+        <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <a
             href={consultHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="cta-sweep group mt-7 inline-flex min-h-14 w-full max-w-sm items-center justify-center gap-2 break-keep rounded-2xl px-5 py-4 text-center text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 sm:w-auto sm:px-8 sm:text-base"
+            className="cta-sweep focus-ring inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-xl px-7 py-3.5 text-lg font-bold text-white sm:w-auto"
           >
-            <Sparkles className="hidden h-5 w-5 shrink-0 sm:block" aria-hidden />
             {MIRAE_COPY.primaryCta}
-            <ArrowUpRight
-              className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 sm:h-5 sm:w-5"
-              aria-hidden
-            />
+            <ArrowUpRight className="h-5 w-5 shrink-0" aria-hidden />
           </a>
-
-          {/* 5. 서브 액션 */}
-          <div className="mt-5 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:gap-4">
-            <a
-              href={samplesHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 break-keep rounded-xl border border-brand-200 bg-white/80 px-5 py-3 text-sm font-bold text-brand-700 transition-colors hover:border-brand-300 hover:bg-white sm:w-auto"
-            >
-              <LayoutGrid className="h-4 w-4" aria-hidden />
-              {MIRAE_COPY.secondaryCta}
-            </a>
-            <a
-              href={homeHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-12 items-center justify-center gap-1 break-keep rounded-xl px-3 py-3 text-center text-sm font-semibold text-slate-500 underline-offset-4 transition-colors hover:text-navy-900 hover:underline"
-            >
-              {MIRAE_COPY.tertiaryCta}
-              <ArrowUpRight className="h-4 w-4" aria-hidden />
-            </a>
-          </div>
+          <a
+            href={samplesHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary w-full sm:w-auto"
+          >
+            {MIRAE_COPY.secondaryCta}
+          </a>
         </div>
+
+        <a
+          href={homeHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="focus-ring mt-4 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-slate-500 underline-offset-4 hover:text-navy-900 hover:underline"
+        >
+          {MIRAE_COPY.tertiaryCta}
+          <ArrowUpRight className="h-4 w-4" aria-hidden />
+        </a>
       </div>
     </section>
   );

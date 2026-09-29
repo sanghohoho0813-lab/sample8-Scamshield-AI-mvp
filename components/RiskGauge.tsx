@@ -1,91 +1,56 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { RiskLevel } from "@/lib/types";
-
-const LEVEL_COLORS: Record<RiskLevel, string> = {
-  low: "var(--color-risk-low)",
-  caution: "var(--color-risk-caution)",
-  high: "var(--color-risk-high)",
-  "very-high": "var(--color-risk-very)",
-};
+import { RISK_STYLE } from "@/lib/risk-style";
 
 interface RiskGaugeProps {
   score: number;
   level: RiskLevel;
-  levelLabel: string;
-  /** true면 마운트 시 0부터 점수까지 카운트업 */
+  /** true면 0부터 점수까지 카운트업 (방금 분석한 결과에만 사용) */
   animate?: boolean;
 }
 
-/** 첨부 디자인의 반원형 위험도 게이지 */
-export default function RiskGauge({ score, level, levelLabel, animate = true }: RiskGaugeProps) {
+const R = 80;
+const ARC = Math.PI * R;
+
+/** 반원형 위험도 게이지 — 점수는 호 안쪽에 겹치지 않게 배치 */
+export default function RiskGauge({ score, level, animate = false }: RiskGaugeProps) {
   const [display, setDisplay] = useState(animate ? 0 : score);
-  const rafRef = useRef<number | null>(null);
+  const style = RISK_STYLE[level];
 
   useEffect(() => {
-    if (!animate) {
+    if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setDisplay(score);
       return;
     }
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
-      setDisplay(score);
-      return;
-    }
-    const duration = 900;
+    let raf = 0;
     const start = performance.now();
     const tick = (now: number) => {
-      const t = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setDisplay(Math.round(score * eased));
-      if (t < 1) rafRef.current = requestAnimationFrame(tick);
+      const t = Math.min((now - start) / 800, 1);
+      setDisplay(Math.round(score * (1 - Math.pow(1 - t, 3))));
+      if (t < 1) raf = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [score, animate]);
 
-  const color = LEVEL_COLORS[level];
-  // 반원 호: 반지름 80, 중심 (100, 95)
-  const r = 80;
-  const circumference = Math.PI * r;
-  const progress = (display / 100) * circumference;
-
   return (
-    <div className="flex flex-col items-center" role="img" aria-label={`위험도 ${score}점, ${levelLabel}`}>
-      <svg viewBox="0 0 200 112" className="w-72 max-w-full md:w-80" aria-hidden>
+    <div className="relative mx-auto w-full max-w-[12rem] lg:max-w-[14rem]" role="img" aria-label={`위험도 ${score}점 (100점 만점), ${style.label}`}>
+      <svg viewBox="0 0 200 108" className="block w-full" aria-hidden>
+        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--color-line)" strokeWidth="14" strokeLinecap="round" />
         <path
-          d="M 20 95 A 80 80 0 0 1 180 95"
+          d="M 20 100 A 80 80 0 0 1 180 100"
           fill="none"
-          stroke="var(--color-line)"
-          strokeWidth="13"
+          stroke={style.color}
+          strokeWidth="14"
           strokeLinecap="round"
-        />
-        <path
-          d="M 20 95 A 80 80 0 0 1 180 95"
-          fill="none"
-          stroke={color}
-          strokeWidth="13"
-          strokeLinecap="round"
-          strokeDasharray={`${progress} ${circumference}`}
-          style={{ transition: "stroke 0.3s ease" }}
+          strokeDasharray={`${(display / 100) * ARC} ${ARC}`}
         />
       </svg>
-      <div className="-mt-24 flex flex-col items-center md:-mt-28">
-        <div className="flex items-baseline gap-1">
-          <span className="text-5xl font-extrabold tabular-nums tracking-tight md:text-6xl" style={{ color }}>
-            {display}
-          </span>
-          <span className="text-xl font-semibold text-slate-400">/100</span>
-        </div>
-        <span
-          className="mt-2 rounded-full px-3 py-1 text-sm font-bold"
-          style={{ color, backgroundColor: `color-mix(in srgb, ${color} 10%, white)` }}
-        >
-          위험 신호: {levelLabel}
-        </span>
+      <div className="absolute inset-x-0 bottom-0 flex items-baseline justify-center gap-0.5" aria-hidden>
+        <span className={`whitespace-nowrap text-4xl font-extrabold tabular-nums tracking-tight lg:text-5xl ${style.text}`}>{display}</span>
+        <span className="text-base font-semibold text-slate-400">/100</span>
       </div>
     </div>
   );
