@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SampleBridgeCTA from "@/components/SampleBridgeCTA";
 import MobileNav from "@/components/MobileNav";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
@@ -39,6 +40,8 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-dvh">
+        {/* 미래AI랩 데모 공용 뒤로·앞으로 버튼 */}
+        <Script src="/mirae-history-nav.js" strategy="beforeInteractive" />
         <SettingsProvider>
           <Header />
           <main>{children}</main>
