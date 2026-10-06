@@ -27,7 +27,7 @@ export default function HistoryRow({ entry, timeLabel }: HistoryRowProps) {
       <span className="min-w-0 flex-1">
         <span className="flex items-baseline gap-3">
           <span className="min-w-0 flex-1 truncate text-base font-semibold text-navy-900">{entry.preview}</span>
-          <span className="shrink-0 whitespace-nowrap text-sm tabular-nums text-slate-400">{timeLabel}</span>
+          <span className="shrink-0 whitespace-nowrap text-sm tabular-nums text-slate-500">{timeLabel}</span>
         </span>
         <span className="mt-0.5 flex items-center gap-1.5 whitespace-nowrap text-sm">
           <span className={`shrink-0 font-semibold ${style.text}`}>{style.label}</span>

@@ -1,44 +1,36 @@
-import type { AnalysisResult } from "./types";
+import type { AnalysisResult, AnalysisSource } from "./types";
 import { analyzeMessageDemo } from "./risk-engine";
+
+const REQUEST_TIMEOUT_MS = 5000;
 
 /**
  * 메시지 분석 진입점.
- *
- * 실제 LLM API(AI_API_KEY)가 설정된 경우 서버 라우트(/api/analyze)를 통해
- * LLM 기반 분석을 시도하고, 실패하거나 키가 없으면 Demo Analysis Engine을 사용한다.
- * 함수 시그니처는 LLM 연동 후에도 동일하게 유지된다.
+ * 서버 API(/api/analyze)를 먼저 쓰고, 네트워크 오류·시간 초과·비정상 응답이면
+ * 같은 규칙 엔진을 브라우저에서 실행해 결과를 돌려준다. (오프라인에서도 검사 가능)
  */
-export async function analyzeMessage(
-  message: string,
-  source: "text" | "image" = "text",
-): Promise<AnalysisResult> {
+export async function analyzeMessage(message: string, source: AnalysisSource = "text"): Promise<AnalysisResult> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
     const res = await fetch("/api/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message, source }),
+      signal: controller.signal,
     });
     if (res.ok) {
-      const data = (await res.json()) as AnalysisResult;
-      if (data && typeof data.score === "number") return data;
+      const data: unknown = await res.json();
+      if (isAnalysisResult(data)) return data;
     }
   } catch {
-    // 네트워크 오류 시 클라이언트 데모 엔진으로 폴백
+    // 네트워크 오류·시간 초과 → 아래 로컬 엔진으로 폴백
+  } finally {
+    clearTimeout(timer);
   }
   return analyzeMessageDemo(message, source);
 }
 
-/** 위험 신호만 추출 (LLM 연동 시 별도 프롬프트로 대체 가능) */
-export function extractRiskSignals(message: string) {
-  return analyzeMessageDemo(message).signals;
-}
-
-/** AI 요약 생성 (LLM 연동 시 별도 프롬프트로 대체 가능) */
-export function generateSummary(message: string) {
-  return analyzeMessageDemo(message).summary;
-}
-
-/** 행동 가이드 생성 (LLM 연동 시 별도 프롬프트로 대체 가능) */
-export function generateSafetyGuide(message: string) {
-  return analyzeMessageDemo(message).actions;
+function isAnalysisResult(data: unknown): data is AnalysisResult {
+  const r = data as Partial<AnalysisResult> | null;
+  return !!r && typeof r.id === "string" && typeof r.score === "number" && Array.isArray(r.signals);
 }

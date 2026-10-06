@@ -22,7 +22,7 @@ export default function DateTimeBar() {
 
   return (
     <div className="hidden border-b border-line/70 bg-surface/60 md:block">
-      <div className="mx-auto flex h-8 max-w-6xl items-center justify-between px-6 text-xs text-slate-400">
+      <div className="mx-auto flex h-8 max-w-6xl items-center justify-between px-6 text-xs text-slate-500">
         <span className="flex items-center gap-1.5 font-semibold">
           <MiraeMark size={14} className="h-3.5 w-3.5" />
           MIRAE AI LAB

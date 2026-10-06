@@ -78,7 +78,7 @@ export default function SettingsPage() {
         <h2 id="records-heading" className="text-lg font-bold text-navy-900">
           기록 관리
         </h2>
-        <p className="mt-1 text-base text-slate-500">기록은 이 기기의 브라우저에만 저장되며, 서버로 전송되지 않습니다.</p>
+        <p className="mt-1 text-base text-slate-500">기록은 이 기기의 브라우저에만 저장되고, 서버로 보내지 않아요.</p>
         <div className="card mt-3 divide-y divide-line overflow-hidden">
           <Link href="/history" className="focus-ring flex min-h-14 items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
             <span className="text-base font-semibold text-navy-900">분석 기록</span>
@@ -89,13 +89,13 @@ export default function SettingsPage() {
           </Link>
           <SettingRow
             title="예시 기록으로 되돌리기"
-            description="직접 검사한 기록은 지우고, 체험용 예시 기록 8건을 다시 채웁니다."
+            description="직접 검사한 기록은 지우고, 체험용 예시 기록 8건을 다시 채워요."
             actionLabel="되돌리기"
             onAction={() => setPending("restore")}
           />
           <SettingRow
             title="모든 기록 삭제"
-            description="저장된 검사 기록을 모두 지웁니다. 되돌릴 수 없어요."
+            description="저장된 검사 기록을 모두 지워요. 되돌릴 수 없어요."
             actionLabel="삭제"
             danger
             disabled={count === 0}
@@ -106,7 +106,7 @@ export default function SettingsPage() {
         {pending && (
           <div role="alertdialog" aria-labelledby="confirm-text" className="animate-fade-in mt-3 rounded-xl border border-line bg-white px-5 py-4">
             <p id="confirm-text" className="text-base font-semibold text-navy-900">
-              {pending === "clear" ? `기록 ${count}건을 모두 삭제할까요?` : "예시 기록으로 되돌릴까요? 직접 검사한 기록은 사라집니다."}
+              {pending === "clear" ? `기록 ${count}건을 모두 삭제할까요?` : "예시 기록으로 되돌릴까요? 직접 검사한 기록은 사라져요."}
             </p>
             <div className="mt-3 flex gap-2">
               <button
@@ -135,20 +135,22 @@ export default function SettingsPage() {
         <h2 id="info-heading" className="text-lg font-bold text-navy-900">
           서비스 정보
         </h2>
-        <dl className="card mt-3 divide-y divide-line overflow-hidden text-base">
-          <div className="flex items-center justify-between gap-4 px-5 py-3.5">
-            <dt className="text-slate-500">분석 방식</dt>
-            <dd className="text-right font-semibold text-navy-900">규칙 기반 데모 엔진</dd>
-          </div>
-          <div className="flex items-center justify-between gap-4 px-5 py-3.5">
-            <dt className="text-slate-500">캡처 이미지 인식</dt>
-            <dd className="text-right font-semibold text-navy-900">데모 OCR (예시 문장)</dd>
-          </div>
+        <div className="card mt-3 divide-y divide-line overflow-hidden text-base">
+          <dl className="divide-y divide-line">
+            <div className="flex items-center justify-between gap-4 px-5 py-3.5">
+              <dt className="text-slate-500">분석 방식</dt>
+              <dd className="text-right font-semibold text-navy-900">규칙 기반 데모 엔진</dd>
+            </div>
+            <div className="flex items-center justify-between gap-4 px-5 py-3.5">
+              <dt className="text-slate-500">캡처 이미지 인식</dt>
+              <dd className="text-right font-semibold text-navy-900">데모 OCR (예시 문장)</dd>
+            </div>
+          </dl>
           <Link href="/about" className="focus-ring flex min-h-14 items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
             <span className="font-semibold text-navy-900">서비스 소개</span>
             <ChevronRight className="h-5 w-5 text-slate-300" aria-hidden />
           </Link>
-        </dl>
+        </div>
       </section>
 
       {toastNode}

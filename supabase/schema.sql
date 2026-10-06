@@ -1,6 +1,6 @@
--- ScamShield MVP Supabase 스키마
--- MVP에서는 복잡한 인증을 생략하고 데모 사용자를 자동 설정한다.
--- 클라이언트는 env(NEXT_PUBLIC_SUPABASE_URL)가 없으면 로컬 저장소 기반 데모 모드로 동작한다.
+-- ScamShield 서버 저장 설계안 (Supabase/Postgres)
+-- 현재 MVP는 기록을 브라우저(localStorage)에만 저장하며 이 스키마를 쓰지 않는다.
+-- 기기 간 동기화가 필요해지면 lib/storage.ts와 같은 인터페이스로 이 테이블을 붙인다.
 
 create table if not exists users (
   id uuid primary key default gen_random_uuid(),

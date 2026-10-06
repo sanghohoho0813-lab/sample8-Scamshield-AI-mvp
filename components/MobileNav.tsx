@@ -28,7 +28,7 @@ export default function MobileNav() {
               href={href}
               aria-current={active ? "page" : undefined}
               className={`flex min-h-16 flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors ${
-                active ? "text-brand-700" : "text-slate-400"
+                active ? "text-brand-700" : "text-slate-500"
               }`}
             >
               <Icon className="h-6 w-6" aria-hidden strokeWidth={active ? 2.3 : 1.9} />

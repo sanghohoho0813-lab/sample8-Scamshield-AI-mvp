@@ -43,7 +43,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
       </div>
 
       {entry === undefined && (
-        <div className="grid gap-4 lg:grid-cols-[23rem_1fr] lg:gap-8" aria-busy="true" aria-label="결과를 불러오는 중">
+        <div className="grid min-h-dvh content-start gap-4 lg:grid-cols-[23rem_1fr] lg:gap-8" aria-busy="true" aria-label="결과를 불러오는 중">
           <div className="skeleton h-96 rounded-2xl" />
           <div className="flex flex-col gap-4">
             <div className="skeleton h-72 rounded-2xl" />
@@ -57,7 +57,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
           <SearchX className="h-10 w-10 text-slate-300" aria-hidden />
           <h1 className="mt-4 text-lg font-bold text-navy-900">검사 결과를 찾을 수 없어요</h1>
           <p className="mt-1.5 text-base text-slate-500">
-            삭제되었거나 다른 기기·브라우저에서 검사한 결과일 수 있어요. 기록은 검사한 기기에만 저장됩니다.
+            삭제되었거나 다른 기기·브라우저에서 검사한 결과일 수 있어요. 기록은 검사한 기기에만 저장돼요.
           </p>
           <div className="mt-6 flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
             <Link href="/" className="btn-primary">

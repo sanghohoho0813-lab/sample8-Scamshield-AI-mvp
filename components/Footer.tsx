@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col gap-5 px-4 py-8 md:flex-row md:items-center md:justify-between md:px-6">
         <div className="flex flex-col gap-2">
           <MiraeLogo width={132} className="h-auto w-[132px]" />
-          <p className="text-xs text-slate-400">© {new Date().getFullYear()} MIRAE AI LAB. All rights reserved.</p>
+          <p className="text-xs text-slate-500">© {new Date().getFullYear()} MIRAE AI LAB. All rights reserved.</p>
         </div>
         <div className="flex flex-col gap-3 md:items-end">
           <nav aria-label="하단 링크" className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-slate-500">
@@ -22,7 +22,7 @@ export default function Footer() {
               미래AI랩
             </a>
           </nav>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             분석 결과는 참고용 위험 신호 안내이며, 사기 여부를 확정하지 않습니다.
           </p>
         </div>

@@ -50,7 +50,7 @@ export default function RiskGauge({ score, level, animate = false }: RiskGaugePr
       </svg>
       <div className="absolute inset-x-0 bottom-0 flex items-baseline justify-center gap-0.5" aria-hidden>
         <span className={`whitespace-nowrap text-4xl font-extrabold tabular-nums tracking-tight lg:text-5xl ${style.text}`}>{display}</span>
-        <span className="text-base font-semibold text-slate-400">/100</span>
+        <span className="text-base font-semibold text-slate-500">/100</span>
       </div>
     </div>
   );

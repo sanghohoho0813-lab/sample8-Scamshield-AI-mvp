@@ -9,19 +9,19 @@ export const metadata: Metadata = {
 const PRINCIPLES = [
   {
     title: "판정이 아닌 안내",
-    description: "‘100% 사기’ 같은 단정 대신 위험 신호를 알려드리고, 항상 공식 채널에서 다시 확인하도록 안내합니다.",
+    description: "‘100% 사기’ 같은 단정 대신 위험 신호를 알려드리고, 항상 공식 채널에서 다시 확인하도록 안내해요.",
   },
   {
     title: "쉽게, 행동 중심으로",
-    description: "어려운 보안 용어 대신 왜 위험한지, 지금 무엇을 하면 되는지를 먼저 보여드립니다.",
+    description: "어려운 보안 용어 대신 왜 위험한지, 지금 무엇을 하면 되는지를 먼저 보여드려요.",
   },
   {
     title: "받은 그 자리에서",
-    description: "문자를 받은 순간 스마트폰에서 바로 붙여넣어 확인할 수 있도록 모바일을 기준으로 설계했습니다.",
+    description: "문자를 받은 순간 스마트폰에서 바로 붙여넣어 확인할 수 있도록 모바일을 기준으로 설계했어요.",
   },
   {
     title: "가족과 함께",
-    description: "부모님이 받은 문자를 자녀가 대신 확인하고, 결과를 메신저로 바로 공유할 수 있습니다.",
+    description: "부모님이 받은 문자를 자녀가 대신 확인하고, 결과를 메신저로 바로 공유할 수 있어요.",
   },
 ];
 
@@ -43,11 +43,11 @@ export default function AboutPage() {
     <div className="mx-auto max-w-3xl px-4 py-6 md:px-6 md:py-10">
       <p className="text-sm font-bold text-brand-700">서비스 소개</p>
       <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">
-        의심 문자 앞에서, 몇 초 안에 판단을 돕습니다
+        의심 문자 앞에서, 몇 초 안에 판단을 도와드려요
       </h1>
       <p className="mt-3 text-base text-slate-600 md:text-lg">
         ScamShield는 받은 문자나 메시지가 의심스러울 때, 내용을 넣으면 위험 신호와 지금 해야 할 행동을 쉽게
-        설명해주는 안전 보조 서비스입니다.
+        설명해주는 안전 보조 서비스예요.
       </p>
 
       <section aria-labelledby="principles-heading" className="mt-10">

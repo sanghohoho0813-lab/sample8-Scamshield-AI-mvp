@@ -1,29 +1,36 @@
 import { NextResponse } from "next/server";
 import { analyzeMessageDemo } from "@/lib/risk-engine";
+import { parseAnalyzeRequest } from "@/lib/validation";
+
+/** 2,000자 한글 문자 + JSON 여유분. 이보다 큰 본문은 파싱 전에 거절한다 */
+const MAX_BODY_BYTES = 16 * 1024;
+
+const json = (data: unknown, status = 200) =>
+  NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
 
 /**
- * 분석 API.
- *
- * 현재는 규칙 기반 Demo Analysis Engine으로 분석한다. (engine: "demo")
- * 실제 LLM을 연결할 때는 AI_API_KEY가 있는 경우 이 지점에서 LLM을 호출해
- * summary·actions를 보강하고, 실제로 호출에 성공했을 때만 engine을 "ai"로 표시한다.
+ * 분석 API — 현재는 규칙 기반 데모 엔진(engine: "demo")으로 분석한다.
+ * LLM을 연결할 때는 이 지점에서 호출하고, 실제로 성공했을 때만 engine을 "ai"로 표시한다.
  */
 export async function POST(request: Request) {
-  let body: { message?: string; source?: "text" | "image" };
+  if (!request.headers.get("content-type")?.includes("application/json")) {
+    return json({ error: "JSON 형식으로 보내주세요." }, 415);
+  }
+
+  const raw = await request.text();
+  if (new TextEncoder().encode(raw).byteLength > MAX_BODY_BYTES) {
+    return json({ error: "요청이 너무 커요." }, 413);
+  }
+
+  let body: unknown;
   try {
-    body = await request.json();
+    body = JSON.parse(raw);
   } catch {
-    return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 400 });
+    return json({ error: "요청 형식이 올바르지 않아요." }, 400);
   }
 
-  const message = (body.message ?? "").trim();
-  if (!message) {
-    return NextResponse.json({ error: "분석할 문자 내용을 입력해주세요." }, { status: 400 });
-  }
-  if (message.length > 2000) {
-    return NextResponse.json({ error: "문자는 2,000자까지 분석할 수 있습니다." }, { status: 400 });
-  }
+  const parsed = parseAnalyzeRequest(body);
+  if (!parsed.ok) return json({ error: parsed.error }, 400);
 
-  const source = body.source === "image" ? "image" : "text";
-  return NextResponse.json(analyzeMessageDemo(message, source));
+  return json(analyzeMessageDemo(parsed.value.message, parsed.value.source));
 }

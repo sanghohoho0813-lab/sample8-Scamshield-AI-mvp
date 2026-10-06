@@ -49,9 +49,11 @@ export interface UrlFinding {
   notes: string[];
 }
 
+export type PhoneType = "개인 휴대폰 번호" | "대표번호 형식" | "국제발신 번호" | "일반 전화번호";
+
 export interface PhoneFinding {
   number: string;
-  type: string;
+  type: PhoneType;
   notes: string[];
 }
 
@@ -73,7 +75,7 @@ export interface AnalysisResult {
   summary: string;
   actions: string[];
   /** 이미지 업로드 경로로 분석했는지 */
-  source: "text" | "image";
+  source: AnalysisSource;
   /** demo | ai */
   engine: "demo" | "ai";
 }
@@ -90,5 +92,7 @@ export interface HistoryEntry {
   sharedAt?: string;
   result: AnalysisResult;
 }
+
+export type AnalysisSource = "text" | "image";
 
 export type FontScale = "normal" | "large" | "x-large";

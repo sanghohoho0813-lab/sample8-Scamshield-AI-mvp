@@ -1,19 +1,14 @@
-import type { AnalysisResult, HighlightSpan, RiskLevel, SignalCategory } from "./types";
+import type { AnalysisResult, HighlightSpan, SignalCategory } from "./types";
+import { LEVEL_HEADLINES } from "./risk-engine";
 
 /**
  * 결과 화면 표현 규칙.
  * 엔진 결과(저장된 과거 기록 포함)를 사람이 훑어보기 쉬운 문장으로 바꾼다.
  */
 
-const HEADLINES: Record<RiskLevel, string> = {
-  "very-high": "위험 신호가 많이 발견됐어요",
-  high: "주의가 필요한 문자예요",
-  caution: "몇 가지 의심스러운 점이 있어요",
-  low: "강한 위험 신호는 보이지 않아요",
-};
-
+/** 과거 기록은 저장 당시 문구를 갖고 있으므로 항상 현재 기준 문구로 다시 만든다 */
 export function verdictHeadline(r: AnalysisResult): string {
-  return HEADLINES[r.level];
+  return LEVEL_HEADLINES[r.level];
 }
 
 const q = (s: string) => `“${s.length > 14 ? `${s.slice(0, 14)}…` : s}”`;

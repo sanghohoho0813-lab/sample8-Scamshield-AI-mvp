@@ -6,13 +6,13 @@ import { ClipboardPaste, ImageUp, MessageSquareText, RefreshCw, Trash2, X } from
 import type { AnalysisResult } from "@/lib/types";
 import { analyzeMessage } from "@/lib/ai";
 import { saveAnalysis } from "@/lib/storage";
+import { MAX_MESSAGE_LENGTH } from "@/lib/constants";
 import { DEMO_EXTRACTED_TEXT, FEATURED_SAMPLES, SAMPLE_MESSAGES } from "@/lib/samples";
 import AnalysisLoader from "./AnalysisLoader";
 
 type Mode = "text" | "image";
 type OcrStatus = "idle" | "reading" | "ready";
 
-const MAX_LENGTH = 2000;
 const MIN_LENGTH = 6;
 const ACCEPTED = ["image/png", "image/jpeg", "image/webp"];
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
@@ -100,7 +100,7 @@ export default function AnalyzeForm() {
       setError(
         /heic|heif/i.test(f.type) || /\.hei[cf]$/i.test(f.name)
           ? "아이폰 HEIC 사진은 아직 읽지 못해요. 문자 화면을 스크린샷(PNG)으로 찍어 올려주세요."
-          : "이미지를 읽지 못했습니다. PNG·JPG 파일을 올리거나 문자 내용을 직접 입력해주세요.",
+          : "이미지를 읽지 못했어요. PNG·JPG 파일을 올리거나 문자 내용을 직접 입력해주세요.",
       );
       return;
     }
@@ -132,9 +132,9 @@ export default function AnalyzeForm() {
 
   /** 길이 제한을 넘으면 앞부분만 넣고 알려준다 */
   const applyText = (value: string) => {
-    if (value.length > MAX_LENGTH) {
-      setText(value.slice(0, MAX_LENGTH));
-      setNotice(`${MAX_LENGTH.toLocaleString()}자까지만 검사할 수 있어 앞부분만 넣었어요.`);
+    if (value.length > MAX_MESSAGE_LENGTH) {
+      setText(value.slice(0, MAX_MESSAGE_LENGTH));
+      setNotice(`${MAX_MESSAGE_LENGTH.toLocaleString()}자까지만 검사할 수 있어 앞부분만 넣었어요.`);
     } else {
       setText(value);
       setNotice(null);
@@ -233,7 +233,7 @@ export default function AnalyzeForm() {
                 const pasted = e.clipboardData.getData("text");
                 const el = e.currentTarget;
                 const next = text.slice(0, el.selectionStart) + pasted + text.slice(el.selectionEnd);
-                if (next.length > MAX_LENGTH) {
+                if (next.length > MAX_MESSAGE_LENGTH) {
                   e.preventDefault();
                   applyText(next);
                 }
@@ -247,14 +247,14 @@ export default function AnalyzeForm() {
               }}
               placeholder="받은 문자 내용을 그대로 붙여넣어 주세요."
               rows={5}
-              maxLength={MAX_LENGTH}
+              maxLength={MAX_MESSAGE_LENGTH}
               aria-invalid={Boolean(error)}
               aria-describedby={error ? "form-error" : undefined}
               className="block w-full resize-none rounded-xl border border-line bg-white px-4 pb-10 pt-3.5 text-base text-slate-800 outline-none transition-shadow placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
             />
             <div className="pointer-events-none absolute inset-x-3 bottom-2.5 flex items-center justify-between">
-              <span className="text-xs tabular-nums text-slate-400">
-                {currentLength.toLocaleString()} / {MAX_LENGTH.toLocaleString()}
+              <span className="text-xs tabular-nums text-slate-500">
+                {currentLength.toLocaleString()} / {MAX_MESSAGE_LENGTH.toLocaleString()}
               </span>
               {text ? (
                 <button
@@ -369,7 +369,7 @@ export default function AnalyzeForm() {
                       value={ocrText}
                       onChange={(e) => setOcrText(e.target.value)}
                       rows={4}
-                      maxLength={MAX_LENGTH}
+                      maxLength={MAX_MESSAGE_LENGTH}
                       className="mt-2 block w-full resize-none rounded-xl border border-line bg-white px-4 py-3 text-base text-slate-800 outline-none focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
                     />
                     <p className="mt-1.5 text-xs text-slate-500">

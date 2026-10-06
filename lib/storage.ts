@@ -54,6 +54,8 @@ function isValidEntry(e: unknown): e is HistoryEntry {
 function write(list: HistoryEntry[]): void {
   try {
     window.localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, MAX_ENTRIES)));
+    // 한 번이라도 직접 저장·삭제했다면 예시 기록을 다시 채우지 않는다
+    window.localStorage.setItem(SEEDED_KEY, "1");
   } catch {
     // 저장 불가 환경: memory 폴백만 유지
   }
