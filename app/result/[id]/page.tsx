@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, SearchX } from "lucide-react";
 import type { HistoryEntry } from "@/lib/types";
 import { getHistoryEntry } from "@/lib/storage";
+import { formatDateTime } from "@/lib/format";
 import ResultView from "@/components/ResultView";
 import { useToast } from "@/components/Toast";
 
@@ -37,7 +38,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
           <ChevronLeft className="h-5 w-5" aria-hidden />
           {isNew ? "새 문자 검사" : "분석 기록"}
         </Link>
-        <p className="text-sm font-semibold text-slate-400">검사 결과</p>
+        {entry && <p className="text-sm text-slate-500">{formatDateTime(entry.result.createdAt)} 검사</p>}
       </div>
 
       {entry === undefined && (

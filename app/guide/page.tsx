@@ -36,6 +36,20 @@ export default function GuidePage() {
         <h2 id="types-heading" className="text-xl font-bold text-navy-900">
           유형별로 조심할 문구
         </h2>
+        <nav aria-label="유형 바로가기" className="-mx-4 mt-3 overflow-x-auto px-4 pb-1 md:mx-0 md:px-0">
+          <ul className="flex w-max gap-2 md:w-auto md:flex-wrap">
+            {GUIDES.map((guide) => (
+              <li key={guide.id}>
+                <a
+                  href={`#${guide.id}`}
+                  className="focus-ring inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-line bg-white px-4 text-sm font-semibold text-slate-600 hover:border-brand-200 hover:text-navy-900"
+                >
+                  {guide.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
         <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {GUIDES.map((guide) => (
             <article

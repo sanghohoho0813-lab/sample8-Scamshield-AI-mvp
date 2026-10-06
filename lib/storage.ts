@@ -25,11 +25,30 @@ function read(): HistoryEntry[] {
     }
     const raw = window.localStorage.getItem(HISTORY_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw) as HistoryEntry[];
-    return Array.isArray(parsed) ? parsed : [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(isValidEntry) : [];
   } catch {
     return [...memory.values()];
   }
+}
+
+/** 손상되었거나 형식이 다른 기록은 건너뛰어 화면이 깨지지 않게 한다 */
+function isValidEntry(e: unknown): e is HistoryEntry {
+  if (!e || typeof e !== "object") return false;
+  const entry = e as Partial<HistoryEntry>;
+  const r = entry.result;
+  return (
+    typeof entry.id === "string" &&
+    typeof entry.createdAt === "string" &&
+    !!r &&
+    typeof r.score === "number" &&
+    typeof r.message === "string" &&
+    Array.isArray(r.actions) &&
+    Array.isArray(r.signals) &&
+    Array.isArray(r.highlights) &&
+    Array.isArray(r.urls) &&
+    Array.isArray(r.phones)
+  );
 }
 
 function write(list: HistoryEntry[]): void {

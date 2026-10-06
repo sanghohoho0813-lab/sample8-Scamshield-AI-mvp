@@ -6,6 +6,7 @@ import { Inbox } from "lucide-react";
 import type { HistoryEntry } from "@/lib/types";
 import { getHistory, restoreDemoHistory } from "@/lib/storage";
 import HistoryRow from "@/components/HistoryRow";
+import { formatDayGroup, formatTime } from "@/lib/format";
 import { useToast } from "@/components/Toast";
 
 export default function HistoryPage() {
@@ -33,7 +34,7 @@ export default function HistoryPage() {
       <h1 className="text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">분석 기록</h1>
       <p className="mt-1.5 text-base text-slate-500">
         {entries && entries.length > 0
-          ? `이 기기에 저장된 검사 ${entries.length}건 · 눌러서 결과를 다시 볼 수 있어요.`
+          ? `검사 ${entries.length}건 · 눌러서 결과를 다시 볼 수 있어요.`
           : "검사한 문자의 결과를 다시 확인할 수 있어요."}
       </p>
 
@@ -65,9 +66,16 @@ export default function HistoryPage() {
             </div>
           </div>
         ) : (
-          <div className="card animate-fade-in divide-y divide-line overflow-hidden">
-            {entries.map((entry) => (
-              <HistoryRow key={entry.id} entry={entry} now={now} />
+          <div className="animate-fade-in flex flex-col gap-6">
+            {groupByDay(entries, now).map(([label, group]) => (
+              <section key={label} aria-label={label}>
+                <h2 className="mb-2 px-1 text-sm font-semibold text-slate-500">{label}</h2>
+                <div className="card divide-y divide-line overflow-hidden">
+                  {group.map((entry) => (
+                    <HistoryRow key={entry.id} entry={entry} timeLabel={formatTime(entry.createdAt)} />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         )}
@@ -85,4 +93,14 @@ export default function HistoryPage() {
       {toastNode}
     </div>
   );
+}
+
+/** 최신순 목록을 날짜별로 묶는다 (순서 유지) */
+function groupByDay(entries: HistoryEntry[], now: number): [string, HistoryEntry[]][] {
+  const groups = new Map<string, HistoryEntry[]>();
+  for (const entry of entries) {
+    const label = formatDayGroup(entry.createdAt, now);
+    groups.set(label, [...(groups.get(label) ?? []), entry]);
+  }
+  return [...groups.entries()];
 }

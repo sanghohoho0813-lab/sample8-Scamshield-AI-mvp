@@ -21,15 +21,15 @@ export default function HomePage() {
     <>
       {/* Hero + 입력 */}
       <section className="border-b border-line bg-white">
-        <div className="mx-auto grid max-w-6xl gap-6 px-4 pb-10 pt-7 md:px-6 md:pb-14 md:pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:gap-x-16 lg:pt-16">
+        <div className="mx-auto grid max-w-6xl gap-5 px-4 pb-10 pt-6 md:gap-6 md:px-6 md:pb-14 md:pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:gap-x-16 lg:pt-16">
           <div className="lg:pt-8">
-            <p className="text-sm font-bold text-brand-700">문자·스미싱 위험 신호 검사</p>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-navy-900 md:text-4xl lg:text-5xl">
+            <p className="hidden text-sm font-bold text-brand-700 md:block">문자·스미싱 위험 신호 검사</p>
+            <h1 className="text-3xl font-extrabold tracking-tight text-navy-900 md:mt-2 md:text-4xl lg:text-5xl">
               이 문자, 눌러도
               <br /> 괜찮을까요?
             </h1>
-            <p className="mt-3 max-w-md text-base text-slate-600 md:text-lg">
-              받은 문자를 붙여넣으면 위험 신호와 지금 해야 할 행동을 쉽게 알려드려요.
+            <p className="mt-2 max-w-md text-base text-slate-600 md:mt-3 md:text-lg">
+              붙여넣기만 하면 위험 신호와 지금 해야 할 행동을 알려드려요.
             </p>
             <ul className="mt-8 hidden flex-col gap-3 lg:flex">
               {TRUST_POINTS.map(({ icon: Icon, text }) => (

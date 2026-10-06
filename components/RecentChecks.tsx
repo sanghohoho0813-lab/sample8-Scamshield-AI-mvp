@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { HistoryEntry } from "@/lib/types";
 import { getHistory } from "@/lib/storage";
+import { formatRelative } from "@/lib/format";
 import HistoryRow from "./HistoryRow";
 
 /** 홈 "최근 검사" — 방금 검사한 결과가 곧바로 여기에 반영된다 */
@@ -41,7 +42,7 @@ export default function RecentChecks() {
                 </div>
               </div>
             ))
-          : entries.map((entry) => <HistoryRow key={entry.id} entry={entry} now={now} />)}
+          : entries.map((entry) => <HistoryRow key={entry.id} entry={entry} timeLabel={formatRelative(entry.createdAt, now)} />)}
       </div>
     </section>
   );
