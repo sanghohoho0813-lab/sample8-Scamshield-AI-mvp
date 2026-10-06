@@ -27,7 +27,8 @@ export function useToast() {
   const node = toast ? (
     <div
       role="status"
-      className="animate-toast-in fixed inset-x-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-50 mx-auto flex w-fit max-w-md items-center gap-2.5 rounded-xl bg-navy-900 px-4 py-3 text-base font-medium text-white shadow-[var(--shadow-overlay)] md:bottom-8"
+      aria-live="polite"
+      className="animate-toast-in fixed inset-x-4 top-[calc(4.25rem+env(safe-area-inset-top))] z-50 mx-auto flex w-fit max-w-md items-center gap-2.5 rounded-xl bg-navy-900 px-4 py-3 text-base font-medium text-white shadow-[var(--shadow-overlay)] md:top-auto md:bottom-8"
     >
       {toast.tone === "success" ? (
         <CheckCircle2 className="h-5 w-5 shrink-0 text-brand-300" aria-hidden />

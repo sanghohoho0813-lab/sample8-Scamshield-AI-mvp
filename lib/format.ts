@@ -32,6 +32,19 @@ export function formatDayGroup(iso: string, now = Date.now()): string {
   return `${year}${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`;
 }
 
+/** 오늘 14:02 / 어제 09:10 / 10월 3일 08:10 */
+export function formatWhen(iso: string, now = Date.now()): string {
+  const d = new Date(iso);
+  const day = new Date(d).setHours(0, 0, 0, 0);
+  const today = new Date(now).setHours(0, 0, 0, 0);
+  const diff = Math.round((today - day) / 86400000);
+  const time = formatTime(iso);
+  if (diff === 0) return `오늘 ${time}`;
+  if (diff === 1) return `어제 ${time}`;
+  const year = d.getFullYear() !== new Date(now).getFullYear() ? `${d.getFullYear()}년 ` : "";
+  return `${year}${d.getMonth() + 1}월 ${d.getDate()}일 ${time}`;
+}
+
 /** 방금 전 / 3시간 전 / 어제 / 9월 25일 */
 export function formatRelative(iso: string, now = Date.now()): string {
   const d = new Date(iso);

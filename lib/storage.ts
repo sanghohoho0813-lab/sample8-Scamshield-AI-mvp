@@ -67,8 +67,13 @@ export function getHistoryEntry(id: string): HistoryEntry | undefined {
   return read().find((e) => e.id === id) ?? memory.get(id);
 }
 
-/** 핵심 완료 이벤트: 분석 결과를 기록에 저장 */
-export function saveAnalysis(result: AnalysisResult): HistoryEntry {
+const sameText = (a: string, b: string) => a.replace(/\s+/g, " ").trim() === b.replace(/\s+/g, " ").trim();
+
+/**
+ * 핵심 완료 이벤트: 분석 결과를 기록에 저장.
+ * 같은 문자를 다시 검사하면 이전 기록을 새 결과로 바꿔 목록이 중복되지 않게 한다.
+ */
+export function saveAnalysis(result: AnalysisResult): { entry: HistoryEntry; replaced: boolean } {
   const entry: HistoryEntry = {
     id: result.id,
     createdAt: result.createdAt,
@@ -80,8 +85,19 @@ export function saveAnalysis(result: AnalysisResult): HistoryEntry {
     result,
   };
   memory.set(entry.id, entry);
-  if (isBrowser()) write([entry, ...read().filter((e) => e.id !== entry.id)]);
-  return entry;
+  let replaced = false;
+  if (isBrowser()) {
+    const rest = read().filter((e) => {
+      const dup = e.id !== entry.id && sameText(e.result.message, result.message);
+      if (dup) {
+        replaced = true;
+        memory.delete(e.id);
+      }
+      return e.id !== entry.id && !dup;
+    });
+    write([entry, ...rest]);
+  }
+  return { entry, replaced };
 }
 
 /** 공유(또는 복사) 완료 표시 */

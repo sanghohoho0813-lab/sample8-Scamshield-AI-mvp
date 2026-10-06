@@ -179,13 +179,13 @@ export default function AnalyzeForm() {
     const pending = pendingRef.current;
     if (!pending) return;
     const result = await pending;
-    saveAnalysis(result);
+    const { replaced } = saveAnalysis(result);
     try {
       sessionStorage.removeItem(DRAFT_KEY);
     } catch {
       // 저장소를 쓸 수 없는 환경
     }
-    router.push(`/result/${result.id}?new=1`);
+    router.push(`/result/${result.id}?new=${replaced ? "updated" : "1"}`);
   }, [router]);
 
   const currentLength = mode === "text" ? text.length : ocrText.length;

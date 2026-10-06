@@ -1,4 +1,4 @@
-import type { AnalysisResult, RiskLevel, SignalCategory } from "./types";
+import type { AnalysisResult, HighlightSpan, RiskLevel, SignalCategory } from "./types";
 
 /**
  * 결과 화면 표현 규칙.
@@ -31,13 +31,20 @@ const REASONS: Record<SignalCategory, (match?: string) => string> = {
 export function verdictReasons(r: AnalysisResult): string[] {
   if (r.level === "low") return [];
   const suspiciousUrl = r.urls.find((u) => u.suspiciousTld || u.officialMismatch);
-  return r.signals.slice(0, 3).map((s) => {
+  const reasons = r.signals.slice(0, 3).map((s) => {
     if (s.category === "link") {
       if (suspiciousUrl) return "공식 주소가 아닌 것으로 보이는 링크가 있어요";
       if (r.urls.some((u) => u.isShortened)) return "목적지를 숨긴 단축 링크가 있어요";
     }
     return REASONS[s.category](s.category === "link" ? undefined : pickMatch(s.category, s.matches));
   });
+  // 기관·금전 안내를 개인 휴대폰 번호로 받게 하는 것은 그 자체로 강한 신호
+  const mobile = r.phones.some((p) => p.type === "개인 휴대폰 번호");
+  const official = r.signals.some((s) => s.category === "impersonation" || s.category === "money");
+  if (mobile && official) {
+    reasons.splice(Math.min(reasons.length, 2), reasons.length >= 3 ? 1 : 0, "개인 휴대폰 번호로 연락하게 해요");
+  }
+  return reasons;
 }
 
 /** 사칭 이유에는 '배송' 같은 일반 단어보다 실제 기관·회사 이름을 인용한다 */
@@ -65,3 +72,20 @@ export const RECOVERY_STEPS = [
   "모르는 앱이 설치됐다면 삭제하고, 휴대폰 백신으로 검사하세요.",
   "인증번호를 알려줬다면 해당 서비스 비밀번호를 바로 바꾸세요.",
 ];
+
+/** 원문 하이라이트: '배송'·'택배' 같은 일상 단어는 빼고 실제로 주의할 표현만 강조한다 */
+const EVERYDAY_WORDS = /^(배송|택배|운송장|물류)$/;
+export function visibleHighlights(r: AnalysisResult): HighlightSpan[] {
+  return r.highlights.filter((h) => !(h.category === "impersonation" && EVERYDAY_WORDS.test(h.text.trim())));
+}
+
+/** 위험 낮음 결과: 확인했는데 없었던 위험 요소를 짧게 보여준다 (최대 3개) */
+export function absentChecks(r: AnalysisResult): string[] {
+  const has = (c: SignalCategory) => r.signals.some((s) => s.category === c);
+  const riskyUrl = r.urls.some((u) => u.suspiciousTld || u.officialMismatch || u.isShortened);
+  const checks: string[] = [];
+  if (!has("urgency")) checks.push("서두르게 만드는 표현이 없어요");
+  if (!has("credential") && !has("money")) checks.push("개인정보나 돈을 요구하지 않아요");
+  if (!riskyUrl) checks.push(r.urls.length > 0 ? "의심스러운 주소의 링크는 없어요" : "누르게 하는 링크가 없어요");
+  return checks.slice(0, 3);
+}

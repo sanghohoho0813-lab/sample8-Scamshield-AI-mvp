@@ -8,12 +8,14 @@ import type { HistoryEntry } from "@/lib/types";
 import { RISK_STYLE } from "@/lib/risk-style";
 import { guideForScamType } from "@/lib/guides";
 import { deleteEntry, markShared } from "@/lib/storage";
-import { formatDateTime } from "@/lib/format";
+import { formatRelative } from "@/lib/format";
 import {
   EMERGENCY_CONTACTS,
   RECOVERY_STEPS,
+  absentChecks,
   preventionActions,
   verdictHeadline,
+  visibleHighlights,
   verdictReasons,
 } from "@/lib/verdict";
 import RiskGauge from "./RiskGauge";
@@ -57,6 +59,7 @@ export default function ResultView({ entry: initialEntry, isNew = false, notify:
   const isLow = r.level === "low";
   const reasons = verdictReasons(r);
   const actions = preventionActions(r);
+  const highlights = visibleHighlights(r);
   const [detailOpen, setDetailOpen] = useState(false);
   const showSignals = r.signals.length > 0 && !isLow;
   const detailParts = [
@@ -109,7 +112,7 @@ export default function ResultView({ entry: initialEntry, isNew = false, notify:
       {entry.sharedAt && (
         <p className="flex items-center justify-center gap-1 text-sm text-slate-500">
           <Check className="h-4 w-4 text-brand-600" aria-hidden />
-          {formatDateTime(entry.sharedAt)}에 공유했어요
+          {formatRelative(entry.sharedAt)} 공유했어요
         </p>
       )}
       <Link href="/" className="btn-secondary w-full">
@@ -141,6 +144,15 @@ export default function ResultView({ entry: initialEntry, isNew = false, notify:
                 <li key={reason} className="flex gap-2.5 text-base text-slate-700">
                   <span className={`mt-[0.6rem] h-1.5 w-1.5 shrink-0 rounded-full ${style.dot}`} aria-hidden />
                   {reason}
+                </li>
+              ))}
+            </ul>
+          ) : absentChecks(r).length > 0 ? (
+            <ul className="mt-3 flex flex-col gap-2" aria-label="확인한 항목">
+              {absentChecks(r).map((check) => (
+                <li key={check} className="flex gap-2 text-base text-slate-700">
+                  <Check className="mt-1 h-4 w-4 shrink-0 text-risk-low" aria-hidden />
+                  {check}
                 </li>
               ))}
             </ul>
@@ -228,12 +240,12 @@ export default function ResultView({ entry: initialEntry, isNew = false, notify:
         {/* EVIDENCE */}
         <section className="card px-5 py-5" aria-labelledby="message-heading">
           <h2 id="message-heading" className="text-lg font-bold text-navy-900">
-            {r.highlights.length > 0 && !isLow ? "의심되는 문구" : "검사한 문자"}
+            {highlights.length > 0 && !isLow ? "의심되는 문구" : "검사한 문자"}
           </h2>
           <div className="mt-3">
             <HighlightedMessage
               message={r.message}
-              highlights={r.highlights}
+              highlights={highlights}
               hint={isLow ? "사기 문자에 자주 쓰이는 표현에 참고로 밑줄을 그었어요." : undefined}
             />
           </div>

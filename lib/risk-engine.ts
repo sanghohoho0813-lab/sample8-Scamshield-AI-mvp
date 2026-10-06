@@ -25,9 +25,9 @@ const KEYWORD_RULES: KeywordRule[] = [
   { pattern: /금일\s*(내|중|까지)?|오늘\s*(안에|까지|중으로|마감)/g, category: "urgency", reason: "짧은 기한을 제시해 서두르게 만드는 전형적인 압박 표현입니다." },
   { pattern: /정지\s*(예정|됩니다|처리)?|차단\s*(예정|됩니다)?|중지\s*예정/g, category: "urgency", reason: "계정·계좌 정지 등 불이익을 언급해 불안감을 조성하는 표현입니다." },
   { pattern: /마지막\s*(기회|안내|통보)|최종\s*(안내|통보|경고)/g, category: "urgency", reason: "‘마지막 기회’류 표현으로 조급함을 유도하고 있습니다." },
-  { pattern: /반송\s*(예정|처리)?|배송\s*보류|배송\s*중단/g, category: "urgency", reason: "택배 반송·보류를 이유로 급하게 링크를 누르도록 유도하는 패턴입니다." },
+  { pattern: /반송\s*(예정|처리)?|배송\s*보류|배송\s*중단|보관\s*중|주소\s*불명|주소지\s*불명|미수령|수취인\s*부재/g, category: "urgency", reason: "택배 반송·보관을 이유로 급하게 링크를 누르도록 유도하는 패턴입니다." },
   { pattern: /미납|연체|과태료|범칙금|벌금/g, category: "urgency", reason: "미납·과태료 등 불이익을 언급해 확인을 서두르게 만드는 표현입니다." },
-  { pattern: /긴급|위급|급하게|급히|급전/g, category: "urgency", reason: "긴급 상황을 강조해 침착한 판단을 방해하는 표현입니다." },
+  { pattern: /긴급|위급|급하게|급히|급전|급해|급한\s*(일|상황)/g, category: "urgency", reason: "긴급 상황을 강조해 침착한 판단을 방해하는 표현입니다." },
 
   // 개인정보·인증 요구
   { pattern: /인증\s*번호|인증번호/g, category: "credential", reason: "인증번호를 요구하는 문자는 계정 탈취 시도일 가능성이 높습니다." },
@@ -38,19 +38,22 @@ const KEYWORD_RULES: KeywordRule[] = [
   { pattern: /주소\s*(를)?\s*(수정|확인|입력|변경)/g, category: "credential", reason: "주소 확인·수정을 명목으로 개인정보 입력 페이지로 유도하는 패턴입니다." },
 
   // 금전 요구
-  { pattern: /송금|이체/g, category: "money", reason: "문자로 송금을 요구하는 것은 전형적인 사기 패턴입니다." },
-  { pattern: /입금\s*(요청|바랍니다|해)?/g, category: "money", reason: "입금을 요구하는 표현이 있습니다. 직접 확인 전에는 입금하지 마세요." },
+  { pattern: /(송금|이체)(?!\s*(이|가)?\s*(완료|되었|됐))/g, category: "money", reason: "문자로 송금을 요구하는 것은 전형적인 사기 패턴입니다." },
+  { pattern: /입금\s*(요청|바랍니다|부탁|해\s*(줘|주세요|주시))/g, category: "money", reason: "입금을 요구하는 표현이 있습니다. 직접 확인 전에는 입금하지 마세요." },
   { pattern: /결제\s*(가)?\s*(완료|되었|예정)/g, category: "money", reason: "결제 완료를 사칭해 문의 전화를 유도하는 수법에 자주 쓰입니다." },
   { pattern: /수수료|보증금|선입금/g, category: "money", reason: "수수료·보증금 선입금 요구는 대출·중고거래 사기의 대표 패턴입니다." },
   { pattern: /돈\s*(좀)?\s*(보내|부쳐)/g, category: "money", reason: "지인을 사칭한 급전 요청일 가능성이 있습니다. 반드시 전화로 본인 확인하세요." },
+  { pattern: /(?:(?:문화|모바일|구글)\s*)?상품권|기프트\s*카드|핀\s*번호/g, category: "money", reason: "상품권·핀번호는 추적이 어려워 사기범이 돈 대신 자주 요구합니다." },
+  { pattern: /해외\s*(승인|결제)|결제\s*승인/g, category: "money", reason: "큰 금액의 결제 승인을 내세워 문자 속 번호로 전화하게 만드는 수법이 많습니다." },
+  { pattern: /햇살론|대환\s*대출|정부\s*지원|대상자로?\s*선정|기존\s*대출\s*상환/g, category: "money", reason: "정부지원·대환대출을 내세워 수수료나 기존 대출 상환을 요구하는 수법이 많습니다." },
 
   // 기관·지인 사칭
   { pattern: /경찰(청|서)?|검찰(청)?|수사관?|법원/g, category: "impersonation", reason: "수사기관은 문자로 사건 안내나 출석 요구를 하지 않습니다." },
   { pattern: /국세청|세무서|정부24|건강보험(공단)?|국민연금/g, category: "impersonation", reason: "정부기관을 사칭하는 문자에 자주 등장하는 기관명입니다." },
-  { pattern: /은행|카드사|금융감독원|금감원|캐피탈|저축은행/g, category: "impersonation", reason: "금융기관 사칭 여부를 공식 대표번호로 직접 확인해야 합니다." },
+  { pattern: /\[[^\]\s]{0,10}(카드|은행|캐피탈)\]|(KB|국민|신한|삼성|현대|롯데|하나|우리|BC|NH|농협)\s*카드|은행|카드사|금융감독원|금감원|캐피탈|저축은행/g, category: "impersonation", reason: "금융기관 사칭 여부를 공식 대표번호로 직접 확인해야 합니다." },
   { pattern: /택배|배송|운송장|물류|우체국|CJ대한통운|로젠|한진/g, category: "impersonation", reason: "택배사를 사칭해 주소 확인 링크를 누르게 하는 스미싱이 많습니다." },
   { pattern: /엄마|아빠|딸|아들|부모님/g, category: "emotion", reason: "가족을 사칭해 휴대폰 고장 등을 핑계로 금전을 요구하는 수법이 많습니다." },
-  { pattern: /휴대폰\s*(이)?\s*(고장|파손|액정)/g, category: "emotion", reason: "‘휴대폰 고장’은 가족 사칭 사기의 대표적인 시작 문구입니다." },
+  { pattern: /(휴대)?폰\s*(이)?\s*(고장|파손|액정)|액정\s*(이)?\s*(나가|깨)|임시\s*폰|친구\s*폰/g, category: "emotion", reason: "‘휴대폰 고장·임시폰’은 가족 사칭 사기의 대표적인 시작 문구입니다." },
 
   // 투자·대출 유인
   { pattern: /수익\s*(보장|가능)|고수익|300%|\d{2,}%\s*수익/g, category: "money", reason: "높은 수익률 보장은 투자 사기의 전형적인 미끼입니다." },
@@ -384,9 +387,17 @@ export function analyzeMessageDemo(message: string, source: "text" | "image" = "
   // URL 위험 가중
   for (const u of urls) {
     if (u.isShortened) score += 5;
-    if (u.suspiciousTld) score += 8;
-    if (u.officialMismatch) score += 7;
+    if (u.suspiciousTld) score += 12;
+    if (u.officialMismatch) score += 8;
   }
+
+  // 함께 나타나면 훨씬 위험한 조합
+  const has = (c: SignalCategory) => matchesByCategory.has(c);
+  const phones = analyzePhones(trimmed);
+  const mobileContact = phones.some((p) => p.type === "개인 휴대폰 번호");
+  if (has("emotion") && has("money")) score += 12; // 가족·지인을 내세운 금전 요구
+  if (has("impersonation") && has("money")) score += 8; // 기관을 내세운 금전 요구
+  if (mobileContact && (has("impersonation") || has("money"))) score += 15; // 기관·금전 안내를 개인 번호로
 
   // 단정적 인상을 피하기 위해 96점을 상한으로 사용 (100점 = "사기 확정"처럼 보임)
   score = Math.max(0, Math.min(96, score));
@@ -398,7 +409,6 @@ export function analyzeMessageDemo(message: string, source: "text" | "image" = "
 
   const level = scoreToLevel(score);
   const scamType = classifyScamType(trimmed, score);
-  const phones = analyzePhones(trimmed);
   const highlights = collectHighlights(trimmed);
 
   return {

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, SearchX } from "lucide-react";
 import type { HistoryEntry } from "@/lib/types";
 import { getHistoryEntry } from "@/lib/storage";
-import { formatDateTime } from "@/lib/format";
+import { formatWhen } from "@/lib/format";
 import ResultView from "@/components/ResultView";
 import { useToast } from "@/components/Toast";
 
@@ -21,9 +21,10 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
   useEffect(() => {
     setEntry(getHistoryEntry(id) ?? null);
     // 방금 분석한 결과: 저장 안내 후 주소에서 표시를 지워 새로고침 시 반복되지 않게 함
-    if (new URLSearchParams(window.location.search).get("new") === "1") {
+    const fresh = new URLSearchParams(window.location.search).get("new");
+    if (fresh) {
       setIsNew(true);
-      show("분석 기록에 저장했어요.");
+      show(fresh === "updated" ? "같은 문자라 기록을 새로 고쳤어요." : "분석 기록에 저장했어요.");
       router.replace(`/result/${id}`, { scroll: false });
     }
   }, [id, router, show]);
@@ -38,7 +39,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
           <ChevronLeft className="h-5 w-5" aria-hidden />
           {isNew ? "새 문자 검사" : "분석 기록"}
         </Link>
-        {entry && <p className="text-sm text-slate-500">{formatDateTime(entry.result.createdAt)} 검사</p>}
+        {entry && <p className="text-sm text-slate-500">{formatWhen(entry.result.createdAt)} 검사</p>}
       </div>
 
       {entry === undefined && (

@@ -6,9 +6,9 @@ import RecentChecks from "@/components/RecentChecks";
 import { GUIDES } from "@/lib/guides";
 
 const TRUST_POINTS = [
-  { icon: UserRoundCheck, text: "가입 없이 바로 검사" },
-  { icon: Clock3, text: "결과까지 약 3초" },
-  { icon: LockKeyhole, text: "입력한 문자는 이 기기에만 저장" },
+  { icon: UserRoundCheck, text: "가입 없이 바로 검사", short: "가입 없이" },
+  { icon: Clock3, text: "결과까지 약 3초", short: "약 3초" },
+  { icon: LockKeyhole, text: "입력한 문자는 이 기기에만 저장", short: "이 기기에만 저장" },
 ];
 
 /** 홈에 노출할 대표 사기 유형 */
@@ -47,11 +47,12 @@ export default function HomePage() {
             </Suspense>
           </div>
 
-          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 lg:hidden">
-            {TRUST_POINTS.map(({ icon: Icon, text }) => (
-              <li key={text} className="flex items-center gap-1.5 text-sm text-slate-500">
+          <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2 lg:hidden">
+            {TRUST_POINTS.map(({ icon: Icon, text, short }) => (
+              <li key={text} className="flex items-center gap-1.5 whitespace-nowrap text-sm text-slate-500">
                 <Icon className="h-4 w-4 text-brand-600" aria-hidden />
-                {text}
+                <span className="sm:hidden">{short}</span>
+                <span className="hidden sm:inline">{text}</span>
               </li>
             ))}
           </ul>
@@ -63,9 +64,9 @@ export default function HomePage() {
 
         {/* 자주 오는 사기 유형 */}
         <section aria-labelledby="types-heading">
-          <div className="flex items-end justify-between gap-3">
+          <div className="flex items-center justify-between gap-3">
             <h2 id="types-heading" className="text-xl font-bold text-navy-900">
-              요즘 많이 오는 사기 문자
+              자주 오는 사기 문자
             </h2>
             <Link href="/guide" className="focus-ring inline-flex min-h-11 items-center gap-1 rounded-lg text-sm font-semibold text-brand-700 hover:text-brand-800">
               가이드 전체

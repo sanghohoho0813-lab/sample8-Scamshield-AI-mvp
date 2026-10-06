@@ -22,7 +22,7 @@ export default function RecentChecks() {
 
   return (
     <section aria-labelledby="recent-heading">
-      <div className="flex items-end justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <h2 id="recent-heading" className="text-xl font-bold text-navy-900">
           최근 검사
         </h2>

@@ -11,7 +11,7 @@ export default function GuidePage() {
     <div className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-10">
       <h1 className="text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">안전 가이드</h1>
       <p className="mt-1.5 max-w-2xl text-base text-slate-500">
-        어떤 문자든 아래 다섯 가지만 지키면 대부분의 피해를 막을 수 있어요. 유형별로 자주 쓰이는 문구도 함께 확인해보세요.
+        아래 다섯 가지만 지켜도 대부분의 피해를 막을 수 있어요.
       </p>
 
       {/* 공통 원칙 */}

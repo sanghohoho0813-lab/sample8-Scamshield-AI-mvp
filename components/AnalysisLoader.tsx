@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 
 const STEPS = [
-  "문장 구조를 확인하고 있습니다.",
-  "링크와 연락처 패턴을 확인하고 있습니다.",
-  "사칭·압박 표현을 분석하고 있습니다.",
-  "위험 신호를 종합하고 있습니다.",
-  "분석이 완료되었습니다.",
+  "문장 구조를 확인하고 있어요",
+  "링크와 연락처를 살펴보고 있어요",
+  "사칭·재촉 표현을 찾고 있어요",
+  "위험 신호를 종합하고 있어요",
+  "분석이 끝났어요",
 ];
 
 const STEP_INTERVAL = 600;
@@ -55,7 +55,7 @@ export default function AnalysisLoader({ onComplete }: AnalysisLoaderProps) {
         <h2 id="analysis-loader-title" className="text-xl font-bold text-navy-900">
           {finished ? "분석이 끝났어요" : "문자를 분석하고 있어요"}
         </h2>
-        <p className="mt-1 text-sm text-slate-500">잠시만 기다려주세요. 곧 결과를 보여드릴게요.</p>
+        <p className="mt-1 text-base text-slate-500">잠시만 기다려주세요.</p>
 
         <div
           className="mt-5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100"
