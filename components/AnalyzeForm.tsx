@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ClipboardPaste, ImageUp, MessageSquareText, RefreshCw, Trash2, X } from "lucide-react";
+import { ChevronDown, ClipboardPaste, ImageUp, MessageSquareText, RefreshCw, Trash2, X } from "lucide-react";
 import type { AnalysisResult } from "@/lib/types";
 import { analyzeMessage } from "@/lib/ai";
 import { saveAnalysis } from "@/lib/storage";
@@ -45,6 +45,7 @@ export default function AnalyzeForm() {
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [samplesOpen, setSamplesOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const pendingRef = useRef<Promise<AnalysisResult> | null>(null);
   const submittingRef = useRef(false);
@@ -55,6 +56,7 @@ export default function AnalyzeForm() {
     if (sample) {
       setMode("text");
       setText(sample.text);
+      setSamplesOpen(true);
       return;
     }
     try {
@@ -250,9 +252,9 @@ export default function AnalyzeForm() {
               maxLength={MAX_MESSAGE_LENGTH}
               aria-invalid={Boolean(error)}
               aria-describedby={error ? "form-error" : undefined}
-              className="block w-full resize-none rounded-xl border border-line bg-white px-4 pb-10 pt-3.5 text-base text-slate-800 outline-none transition-shadow placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+              className="block w-full resize-none rounded-xl border border-line bg-white px-4 pb-16 pt-3.5 text-base text-slate-800 outline-none transition-shadow placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
             />
-            <div className="pointer-events-none absolute inset-x-3 bottom-2.5 flex items-center justify-between">
+            <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-center justify-between">
               <span className="text-xs tabular-nums text-slate-500">
                 {currentLength.toLocaleString()} / {MAX_MESSAGE_LENGTH.toLocaleString()}
               </span>
@@ -263,7 +265,7 @@ export default function AnalyzeForm() {
                     setText("");
                     setNotice(null);
                   }}
-                  className="focus-ring pointer-events-auto inline-flex min-h-10 items-center gap-1 rounded-lg px-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100"
+                  className="focus-ring pointer-events-auto inline-flex min-h-11 items-center gap-1 rounded-lg px-3 text-base font-medium text-slate-500 hover:bg-slate-100"
                 >
                   <X className="h-4 w-4" aria-hidden />
                   지우기
@@ -273,9 +275,9 @@ export default function AnalyzeForm() {
                   <button
                     type="button"
                     onClick={pasteFromClipboard}
-                    className="focus-ring pointer-events-auto inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-brand-200 bg-brand-50 px-3 text-sm font-semibold text-brand-700 hover:bg-brand-100"
+                    className="focus-ring pointer-events-auto inline-flex min-h-12 items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 text-base font-bold text-brand-700 hover:bg-brand-100"
                   >
-                    <ClipboardPaste className="h-4 w-4" aria-hidden />
+                    <ClipboardPaste className="h-5 w-5" aria-hidden />
                     붙여넣기
                   </button>
                 )
@@ -372,7 +374,7 @@ export default function AnalyzeForm() {
                       maxLength={MAX_MESSAGE_LENGTH}
                       className="mt-2 block w-full resize-none rounded-xl border border-line bg-white px-4 py-3 text-base text-slate-800 outline-none focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
                     />
-                    <p className="mt-1.5 text-xs text-slate-500">
+                    <p className="mt-1.5 text-sm text-slate-500">
                       실제 이미지 인식 대신 예시 문장을 채웠어요. 캡처 속 문자와 다르면 직접 고쳐주세요.
                     </p>
                   </div>
@@ -400,31 +402,42 @@ export default function AnalyzeForm() {
       </button>
 
       {mode === "text" && (
-        <div className="mt-5 border-t border-line pt-4">
-          <p className="text-sm font-semibold text-slate-500">샘플 문자로 체험해보기</p>
-          <div className="mt-2.5 flex flex-wrap gap-2">
-            {FEATURED_SAMPLES.map(({ chip, sample }) => {
-              const selected = text === sample.text;
-              return (
-                <button
-                  key={sample.id}
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() => {
-                    setText(sample.text);
-                    setError(null);
-                  }}
-                  className={`focus-ring min-h-11 rounded-full border px-4 text-sm font-semibold transition-colors ${
-                    selected
-                      ? "border-brand-500 bg-brand-50 text-brand-700"
-                      : "border-line bg-white text-slate-600 hover:border-brand-200 hover:text-navy-900"
-                  }`}
-                >
-                  {chip}
-                </button>
-              );
-            })}
-          </div>
+        <div className="mt-4 border-t border-line pt-3">
+          <button
+            type="button"
+            onClick={() => setSamplesOpen((v) => !v)}
+            aria-expanded={samplesOpen}
+            aria-controls="sample-list"
+            className="focus-ring -mx-2 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-base font-semibold text-slate-500 hover:text-navy-900"
+          >
+            예시 문자로 먼저 써보기
+            <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${samplesOpen ? "rotate-180" : ""}`} aria-hidden />
+          </button>
+          {samplesOpen && (
+            <div id="sample-list" className="animate-fade-in mt-2 flex flex-wrap gap-2">
+              {FEATURED_SAMPLES.map(({ chip, sample }) => {
+                const selected = text === sample.text;
+                return (
+                  <button
+                    key={sample.id}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => {
+                      setText(sample.text);
+                      setError(null);
+                    }}
+                    className={`focus-ring min-h-11 rounded-full border px-4 text-base font-semibold transition-colors ${
+                      selected
+                        ? "border-brand-500 bg-brand-50 text-brand-700"
+                        : "border-line bg-white text-slate-600 hover:border-brand-200 hover:text-navy-900"
+                    }`}
+                  >
+                    {chip}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 

@@ -1,31 +1,59 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Inbox } from "lucide-react";
-import type { HistoryEntry } from "@/lib/types";
+import { Inbox, X } from "lucide-react";
+import type { HistoryEntry, RiskLevel, ScamType } from "@/lib/types";
 import { getHistory, restoreDemoHistory } from "@/lib/storage";
+import { SCAM_TYPE_LABELS } from "@/lib/risk-engine";
 import HistoryRow from "@/components/HistoryRow";
 import { formatDayGroup, formatTime } from "@/lib/format";
+import { typeName } from "@/lib/verdict";
 import { useToast } from "@/components/Toast";
+
+type LevelFilter = "all" | "danger" | "caution" | "low";
+
+const FILTERS: { value: LevelFilter; label: string; match: (l: RiskLevel) => boolean }[] = [
+  { value: "all", label: "전체", match: () => true },
+  { value: "danger", label: "위험", match: (l) => l === "high" || l === "very-high" },
+  { value: "caution", label: "주의", match: (l) => l === "caution" },
+  { value: "low", label: "낮음", match: (l) => l === "low" },
+];
 
 export default function HistoryPage() {
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
   const [now, setNow] = useState(0);
+  const [level, setLevel] = useState<LevelFilter>("all");
+  const [type, setType] = useState<ScamType | null>(null);
   const { show, node: toastNode } = useToast();
 
   useEffect(() => {
     setEntries(getHistory());
     setNow(Date.now());
-    if (new URLSearchParams(window.location.search).get("deleted") === "1") {
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get("type");
+    if (t && t in SCAM_TYPE_LABELS) setType(t as ScamType);
+    if (params.get("deleted") === "1") {
       show("기록을 삭제했어요.");
       window.history.replaceState(null, "", "/history");
     }
   }, [show]);
 
+  const visible = useMemo(() => {
+    const match = FILTERS.find((f) => f.value === level)!.match;
+    return (entries ?? []).filter((e) => match(e.level) && (!type || e.scamType === type));
+  }, [entries, level, type]);
+
+  const clearType = () => {
+    setType(null);
+    window.history.replaceState(null, "", "/history");
+  };
+
   const restore = () => {
     setEntries(restoreDemoHistory());
     setNow(Date.now());
+    setLevel("all");
+    clearType();
     show("예시 기록 8건을 불러왔어요.");
   };
 
@@ -45,10 +73,10 @@ export default function HistoryPage() {
             <div className="card divide-y divide-line overflow-hidden">
               {[0, 1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="flex items-center gap-3.5 px-4 py-3.5 md:px-5" aria-hidden>
-                  <div className="skeleton h-12 w-12 rounded-xl" />
+                  <div className="skeleton h-11 w-11 rounded-xl" />
                   <div className="flex-1 space-y-2">
-                    <div className="skeleton h-4 w-3/4" />
-                    <div className="skeleton h-3.5 w-1/2" />
+                    <div className="skeleton h-4 w-1/3" />
+                    <div className="skeleton h-3.5 w-3/4" />
                   </div>
                 </div>
               ))}
@@ -69,17 +97,63 @@ export default function HistoryPage() {
             </div>
           </div>
         ) : (
-          <div className="animate-fade-in flex flex-col gap-6">
-            {groupByDay(entries, now).map(([label, group]) => (
-              <section key={label} aria-label={label}>
-                <h2 className="mb-2 px-1 text-sm font-semibold text-slate-500">{label}</h2>
-                <div className="card divide-y divide-line overflow-hidden">
-                  {group.map((entry) => (
-                    <HistoryRow key={entry.id} entry={entry} timeLabel={formatTime(entry.createdAt)} />
-                  ))}
-                </div>
-              </section>
-            ))}
+          <div className="animate-fade-in">
+            {/* 위험 정도로 거르기 */}
+            <div className="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
+              <div className="flex w-max gap-2" role="group" aria-label="위험 정도로 보기">
+                {FILTERS.map((f) => {
+                  const count = entries.filter((e) => f.match(e.level) && (!type || e.scamType === type)).length;
+                  const active = level === f.value;
+                  return (
+                    <button
+                      key={f.value}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setLevel(f.value)}
+                      className={`focus-ring inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-base font-semibold transition-colors ${
+                        active ? "border-navy-900 bg-navy-900 text-white" : "border-line bg-white text-slate-600 hover:border-slate-300"
+                      }`}
+                    >
+                      {f.label}
+                      <span className={`tabular-nums ${active ? "text-white/80" : "text-slate-500"}`}>{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {type && (
+              <p className="mt-3 flex flex-wrap items-center gap-2 text-base text-slate-600">
+                <span>
+                  <b className="text-navy-900">{typeName(SCAM_TYPE_LABELS[type])}</b> 기록만 보고 있어요
+                </span>
+                <button
+                  type="button"
+                  onClick={clearType}
+                  className="focus-ring inline-flex min-h-11 items-center gap-1 rounded-lg px-2 font-semibold text-brand-700 hover:bg-brand-50"
+                >
+                  <X className="h-4 w-4" aria-hidden />
+                  모든 유형 보기
+                </button>
+              </p>
+            )}
+
+            {visible.length === 0 ? (
+              <p className="card mt-4 px-5 py-10 text-center text-base text-slate-500">이 조건에 맞는 기록이 없어요.</p>
+            ) : (
+              <div className="mt-5 flex flex-col gap-6">
+                {groupByDay(visible, now).map(([label, group]) => (
+                  <section key={label} aria-label={label}>
+                    <h2 className="mb-2 px-1 text-sm font-semibold text-slate-500">{label}</h2>
+                    <div className="card divide-y divide-line overflow-hidden">
+                      {group.map((entry) => (
+                        <HistoryRow key={entry.id} entry={entry} timeLabel={formatTime(entry.createdAt)} />
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

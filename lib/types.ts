@@ -15,6 +15,7 @@ export type ScamType =
   | "delivery"
   | "finance"
   | "government"
+  | "payment"
   | "family"
   | "investment"
   | "loan"
@@ -46,7 +47,17 @@ export interface UrlFinding {
   isHttps: boolean;
   suspiciousTld: boolean;
   officialMismatch: boolean;
+  /** 기관 공식 도메인으로 확인된 주소 (이전 기록에는 없을 수 있음) */
+  isOfficial?: boolean;
   notes: string[];
+}
+
+/** 점수 계산 근거 한 줄 — 결과 화면 "점수는 이렇게 매겼어요"에 그대로 보여준다 */
+export interface ScoreItem {
+  label: string;
+  points: number;
+  /** 바로 위 항목에 딸린 추가 점수 (같은 종류 표현이 더 있을 때) */
+  sub?: boolean;
 }
 
 export type PhoneType = "개인 휴대폰 번호" | "대표번호 형식" | "국제발신 번호" | "일반 전화번호";
@@ -74,6 +85,10 @@ export interface AnalysisResult {
   phones: PhoneFinding[];
   summary: string;
   actions: string[];
+  /** 점수 계산 근거 (이전 기록에는 없을 수 있음) */
+  breakdown?: ScoreItem[];
+  /** 상한을 적용했다면 그 이유 */
+  scoreCapNote?: string;
   /** 이미지 업로드 경로로 분석했는지 */
   source: AnalysisSource;
   /** demo | ai */

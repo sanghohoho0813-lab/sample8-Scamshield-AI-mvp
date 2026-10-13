@@ -1,18 +1,18 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowRight, Clock3, LockKeyhole, UserRoundCheck } from "lucide-react";
+import { ArrowRight, Clock3, LifeBuoy, LockKeyhole, UserRoundCheck } from "lucide-react";
 import AnalyzeForm from "@/components/AnalyzeForm";
 import RecentChecks from "@/components/RecentChecks";
 import { GUIDES } from "@/lib/guides";
 
 const TRUST_POINTS = [
   { icon: UserRoundCheck, text: "가입 없이 바로 검사", short: "가입 없이" },
-  { icon: Clock3, text: "결과까지 약 3초", short: "약 3초" },
+  { icon: Clock3, text: "몇 초 안에 결과 확인", short: "몇 초 안에" },
   { icon: LockKeyhole, text: "입력한 문자는 이 기기에만 저장", short: "이 기기에만 저장" },
 ];
 
 /** 홈에 노출할 대표 사기 유형 */
-const FEATURED_GUIDE_IDS = ["delivery", "finance", "family", "government"];
+const FEATURED_GUIDE_IDS = ["delivery", "institution", "family", "payment"];
 
 export default function HomePage() {
   const featuredGuides = GUIDES.filter((g) => FEATURED_GUIDE_IDS.includes(g.id));
@@ -46,6 +46,19 @@ export default function HomePage() {
               <AnalyzeForm />
             </Suspense>
           </div>
+
+          {/* 이미 행동한 사용자 — 검사보다 대처가 먼저다 */}
+          <Link
+            href="/help"
+            className="focus-ring flex min-h-16 items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-3.5 hover:border-brand-200 lg:mt-2 lg:self-start"
+          >
+            <LifeBuoy className="h-6 w-6 shrink-0 text-brand-600" aria-hidden />
+            <span className="min-w-0 flex-1">
+              <span className="block text-base font-bold text-navy-900">이미 링크를 눌렀거나 돈을 보냈나요?</span>
+              <span className="block text-sm text-slate-500">지금 할 일과 신고 전화번호를 알려드려요</span>
+            </span>
+            <ArrowRight className="h-5 w-5 shrink-0 text-slate-400" aria-hidden />
+          </Link>
 
           <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2 lg:hidden">
             {TRUST_POINTS.map(({ icon: Icon, text, short }) => (
@@ -85,9 +98,7 @@ export default function HomePage() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-base font-semibold text-navy-900">{guide.title}</span>
-                    <span className="mt-0.5 block truncate text-sm text-slate-500">
-                      {guide.phrases.map((p) => `“${p}”`).join(" ")}
-                    </span>
+                    <span className="mt-0.5 block truncate text-sm text-slate-500">{guide.summary}</span>
                   </span>
                   <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 group-hover:text-slate-500" aria-hidden />
                 </Link>

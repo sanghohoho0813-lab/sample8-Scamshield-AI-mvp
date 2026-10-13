@@ -26,14 +26,16 @@ const PRINCIPLES = [
 ];
 
 const SCOPE_DONE = [
-  "사칭·압박·금전·개인정보 요구 표현을 찾는 규칙 기반 분석",
-  "링크(단축 URL·의심 도메인)와 연락처 형식 점검",
+  "사칭·재촉·돈 요구·개인정보 요구 표현을 찾는 규칙 기반 분석 — 점수마다 근거를 함께 보여줘요",
+  "정상 알림(카드 승인·인증번호·납부·배송 안내)을 위험으로 잘못 보지 않도록 문맥을 함께 확인",
+  "링크(단축 주소·의심 주소·공식 주소)와 전화번호 형식 점검",
+  "이미 링크를 눌렀거나 돈을 보낸 경우의 상황별 대처 순서와 신고 전화",
+  "가족에게 공유 — 링크·번호를 가린 문구를 미리 보고 보내기",
   "검사 기록 저장·다시 보기·삭제 (이 기기에만 저장)",
-  "결과 공유 (휴대폰 공유 창 또는 복사)",
 ];
 
 const SCOPE_NOT_YET = [
-  "대규모 언어모델(LLM) 기반 AI 분석 — 연결 구조만 준비됨",
+  "AI(대규모 언어모델) 분석 — 연결 구조만 준비됨",
   "실제 이미지 문자 인식(OCR) — 현재는 예시 문장으로 대체",
   "링크 실제 접속·악성코드 검사, 전화번호 소유자 조회",
 ];
@@ -85,7 +87,7 @@ export default function AboutPage() {
             <ul className="mt-3 flex flex-col gap-2.5">
               {SCOPE_NOT_YET.map((item) => (
                 <li key={item} className="flex gap-2 text-base text-slate-500">
-                  <Minus className="mt-1 h-4 w-4 shrink-0 text-slate-400" aria-hidden />
+                  <Minus className="mt-1 h-4 w-4 shrink-0 text-slate-500" aria-hidden />
                   {item}
                 </li>
               ))}

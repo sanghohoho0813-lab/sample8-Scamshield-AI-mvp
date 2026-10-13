@@ -1,97 +1,82 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check, ChevronDown, Info, Phone, ScanSearch, Share2, Trash2 } from "lucide-react";
-import type { HistoryEntry } from "@/lib/types";
+import {
+  ArrowRight,
+  Check,
+  ChevronDown,
+  Info,
+  LifeBuoy,
+  Repeat2,
+  ScanSearch,
+  Share2,
+  ShieldAlert,
+  ShieldCheck,
+  Trash2,
+  TriangleAlert,
+  type LucideIcon,
+} from "lucide-react";
+import type { HistoryEntry, RiskLevel } from "@/lib/types";
 import { RISK_STYLE } from "@/lib/risk-style";
 import { guideForScamType } from "@/lib/guides";
-import { deleteEntry, markShared } from "@/lib/storage";
+import { deleteEntry, getHistory, markShared } from "@/lib/storage";
 import { formatRelative } from "@/lib/format";
+import { buildShareText } from "@/lib/share";
 import {
-  EMERGENCY_CONTACTS,
-  RECOVERY_STEPS,
+  REPEAT_WINDOW_DAYS,
   absentChecks,
-  preventionActions,
+  actionPlan,
+  riskExplanations,
+  scoreBreakdown,
+  similarRecent,
+  typeName,
   verdictHeadline,
   visibleHighlights,
-  verdictReasons,
 } from "@/lib/verdict";
-import RiskGauge from "./RiskGauge";
-import SignalList from "./SignalList";
+import RiskMeter from "./RiskMeter";
+import RecoveryPicker from "./RecoveryPicker";
 import HighlightedMessage from "./HighlightedMessage";
+import SharePreviewDialog from "./SharePreviewDialog";
 
 interface ResultViewProps {
   entry: HistoryEntry;
-  /** 방금 분석한 결과인지 (게이지 애니메이션) */
-  isNew?: boolean;
-  /** 화면 하단 안내 메시지 (페이지의 토스트 하나를 공유) */
+  /** 화면 안내 메시지 (페이지의 토스트 하나를 공유) */
   notify: (message: string, tone?: "success" | "info") => void;
 }
 
-function buildShareText(entry: HistoryEntry): string {
-  const r = entry.result;
-  return [
-    "[ScamShield 문자 위험도 검사]",
-    `${verdictHeadline(r)} (위험도 ${r.score}/100 · ${RISK_STYLE[r.level].label})`,
-    `유형: ${r.scamTypeLabel}`,
-    "",
-    `검사한 문자: “${entry.preview}”`,
-    "",
-    r.level === "low" ? "확인하면 좋은 점" : "지금 해야 할 행동",
-    ...preventionActions(r).slice(0, 3).map((a, i) => `${i + 1}. ${a}`),
-    "",
-    "※ 참고용 위험 신호 분석이며 사기 여부를 확정하지 않습니다.",
-  ].join("\n");
-}
+const STATUS: Record<RiskLevel, { icon: LucideIcon; label: string }> = {
+  "very-high": { icon: ShieldAlert, label: "위험 매우 높음" },
+  high: { icon: ShieldAlert, label: "위험 높음" },
+  caution: { icon: TriangleAlert, label: "주의 필요" },
+  low: { icon: ShieldCheck, label: "위험 낮음" },
+};
 
-export default function ResultView({ entry: initialEntry, isNew = false, notify: show }: ResultViewProps) {
+export default function ResultView({ entry: initialEntry, notify: show }: ResultViewProps) {
   const router = useRouter();
   const [entry, setEntry] = useState(initialEntry);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [sharing, setSharing] = useState(false);
-  const [recoveryOpen, setRecoveryOpen] = useState(false);
+  const [shareText, setShareText] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  // 결과 화면은 기록을 불러온 뒤(브라우저에서만) 그려지므로 첫 렌더에서 바로 계산해 화면이 밀리지 않게 한다
+  const [repeats] = useState(() => similarRecent(initialEntry, getHistory()).length);
 
   const r = entry.result;
   const style = RISK_STYLE[r.level];
-  const guide = guideForScamType(r.scamType);
+  const status = STATUS[r.level];
   const isLow = r.level === "low";
-  const reasons = verdictReasons(r);
-  const actions = preventionActions(r);
+  const guide = guideForScamType(r.scamType);
+  const steps = actionPlan(r);
+  const explanations = riskExplanations(r);
   const highlights = visibleHighlights(r);
-  const [detailOpen, setDetailOpen] = useState(false);
-  const showSignals = r.signals.length > 0 && !isLow;
-  const detailParts = [
-    showSignals && `위험 신호 ${r.signals.length}개`,
-    r.urls.length > 0 && `링크 ${r.urls.length}개`,
-    r.phones.length > 0 && `연락처 ${r.phones.length}개`,
-  ].filter(Boolean) as string[];
+  const { items: scoreItems, approximate } = scoreBreakdown(r);
 
-  const handleShare = async () => {
-    if (sharing) return;
-    setSharing(true);
-    const text = buildShareText(entry);
-    try {
-      if (typeof navigator.share === "function") {
-        try {
-          await navigator.share({ title: "ScamShield 검사 결과", text });
-          setEntry((e) => ({ ...e, sharedAt: markShared(e.id) }));
-          show("결과를 공유했어요.");
-        } catch (err) {
-          // 사용자가 공유 창을 닫은 경우는 조용히 무시
-          if ((err as Error)?.name !== "AbortError") throw err;
-        }
-        return;
-      }
-      await navigator.clipboard.writeText(text);
-      setEntry((e) => ({ ...e, sharedAt: markShared(e.id) }));
-      show("결과를 복사했어요. 메신저에 붙여넣어 가족에게 보내세요.");
-    } catch {
-      show("이 브라우저에서는 공유할 수 없어요. 화면을 캡처해 보내주세요.", "info");
-    } finally {
-      setSharing(false);
-    }
+  const closeShare = useCallback(() => setShareText(null), []);
+  const handleShared = (method: "share" | "copy") => {
+    setEntry((e) => ({ ...e, sharedAt: markShared(e.id) }));
+    setShareText(null);
+    show(method === "share" ? "결과를 보냈어요." : "내용을 복사했어요. 메신저에 붙여넣어 보내세요.");
   };
 
   const handleDelete = () => {
@@ -105,7 +90,7 @@ export default function ResultView({ entry: initialEntry, isNew = false, notify:
 
   const actionButtons = (
     <div className="flex flex-col gap-2.5">
-      <button type="button" onClick={handleShare} disabled={sharing} className="btn-primary w-full">
+      <button type="button" onClick={() => setShareText(buildShareText(entry, window.location.origin))} className="btn-primary w-full">
         <Share2 className="h-5 w-5" aria-hidden />
         가족에게 공유하기
       </button>
@@ -123,230 +108,273 @@ export default function ResultView({ entry: initialEntry, isNew = false, notify:
   );
 
   return (
-    <div className="grid gap-4 md:gap-5 lg:grid-cols-[minmax(0,23rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
-      {/* ANSWER + WHY */}
+    <div className="grid gap-4 md:gap-5 lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
+      {/* 결론 + 지금 할 일 */}
       <aside className="flex flex-col gap-4 lg:sticky lg:top-32">
-        <section className={`card overflow-hidden border-t-4 ${style.border} px-5 pb-6 pt-5`} aria-labelledby="verdict-heading">
-          <RiskGauge score={r.score} level={r.level} animate={isNew} />
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center">
-            <span className={`rounded-full px-3 py-1 text-sm font-bold ${style.bg} ${style.text}`}>위험 신호 {style.label}</span>
-            <span className="text-sm text-slate-500">
-              {r.scamTypeLabel}
-              {r.source === "image" && " · 캡처 이미지(데모 OCR)"}
+        <section className="card px-5 pb-5 pt-5 md:px-6" aria-labelledby="verdict-heading">
+          <p className={`flex items-center gap-2 text-base font-bold ${style.text}`}>
+            <span className={`flex h-9 w-9 items-center justify-center rounded-full ${style.bg}`}>
+              <status.icon className="h-5 w-5" aria-hidden />
             </span>
-          </div>
-          <h1 id="verdict-heading" className="mt-4 text-xl font-bold text-navy-900">
+            {status.label}
+          </p>
+          <h1 id="verdict-heading" className="mt-3 text-2xl font-extrabold tracking-tight text-navy-900">
             {verdictHeadline(r)}
           </h1>
-          {reasons.length > 0 ? (
-            <ul className="mt-3 flex flex-col gap-2" aria-label="이렇게 판단한 이유">
-              {reasons.map((reason) => (
-                <li key={reason} className="flex gap-2.5 text-base text-slate-700">
-                  <span className={`mt-[0.6rem] h-1.5 w-1.5 shrink-0 rounded-full ${style.dot}`} aria-hidden />
-                  {reason}
+
+          <div className="mt-4 rounded-xl bg-slate-50 px-4 py-4">
+            <h2 className="text-sm font-bold text-slate-500">{isLow ? "그래도 이것만 확인하세요" : "지금 이렇게 하세요"}</h2>
+            <ol className="mt-2.5 flex flex-col gap-3" aria-label="지금 해야 할 행동">
+              {steps.map((step, i) => (
+                <li key={step} className="flex gap-3">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
+                    {i + 1}
+                  </span>
+                  <p className={i === 0 ? "text-lg font-bold leading-snug text-navy-900" : "text-base text-slate-700"}>{step}</p>
                 </li>
               ))}
-            </ul>
-          ) : absentChecks(r).length > 0 ? (
-            <ul className="mt-3 flex flex-col gap-2" aria-label="확인한 항목">
+            </ol>
+          </div>
+
+          <div className="mt-5">
+            <RiskMeter level={r.level} score={r.score} />
+          </div>
+        </section>
+
+        {repeats > 0 && (
+          <div className="flex gap-3 rounded-2xl border border-brand-100 bg-brand-50 px-4 py-4" role="note">
+            <Repeat2 className="mt-0.5 h-5 w-5 shrink-0 text-brand-700" aria-hidden />
+            <div className="text-base text-slate-700">
+              <p className="font-bold text-navy-900">
+                최근 {REPEAT_WINDOW_DAYS}일 동안 {typeName(r.scamTypeLabel)} 문자를 {repeats}번 더 받으셨어요
+              </p>
+              <p className="mt-1">같은 수법이 반복되고 있어요. 문자 앱에서 발신 번호를 차단하고 스팸으로 신고해두세요.</p>
+              <Link
+                href={`/history?type=${r.scamType}`}
+                className="focus-ring mt-1.5 inline-flex min-h-11 items-center gap-1 rounded-lg font-semibold text-brand-700"
+              >
+                같은 유형 기록 보기
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            </div>
+          </div>
+        )}
+
+        <div className="hidden lg:block">{actionButtons}</div>
+      </aside>
+
+      <div className="flex min-w-0 flex-col gap-4 md:gap-5">
+        {/* 이미 행동한 사용자 */}
+        {isLow ? (
+          <Link
+            href="/help"
+            className="focus-ring card flex min-h-16 items-center gap-3 px-5 py-4 text-base font-semibold text-navy-900 hover:border-brand-200"
+          >
+            <LifeBuoy className="h-5 w-5 shrink-0 text-brand-600" aria-hidden />
+            <span className="flex-1">이미 링크를 눌렀거나 돈을 보냈다면</span>
+            <ArrowRight className="h-5 w-5 shrink-0 text-slate-400" aria-hidden />
+          </Link>
+        ) : (
+          <section className="card px-5 py-5 md:px-6" aria-labelledby="recovery-heading">
+            <h2 id="recovery-heading" className="text-lg font-bold text-navy-900">
+              이미 링크를 눌렀거나 돈을 보냈나요?
+            </h2>
+            <p className="mt-1 text-base text-slate-500">상황을 고르면 지금 할 일을 순서대로 알려드려요.</p>
+            <div className="mt-4">
+              <RecoveryPicker />
+            </div>
+            <Link href="/help" className="focus-ring mt-3 inline-flex min-h-11 items-center gap-1 rounded-lg text-base font-semibold text-brand-700">
+              신고·상담 전화번호 모두 보기
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </section>
+        )}
+
+        {/* 근거 */}
+        <section className="card px-5 py-5 md:px-6" aria-labelledby="evidence-heading">
+          <h2 id="evidence-heading" className="text-lg font-bold text-navy-900">
+            {isLow ? "이렇게 확인했어요" : "왜 위험한가요?"}
+          </h2>
+
+          {!isLow && guide && (
+            <div className="mt-3 flex gap-3 rounded-xl border border-line px-4 py-3.5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+                <guide.icon className="h-5 w-5" aria-hidden />
+              </span>
+              <div className="min-w-0">
+                <p className="text-base font-bold text-navy-900">{guide.title} 문자와 비슷해요</p>
+                <p className="mt-0.5 text-base text-slate-600">{guide.summary}</p>
+                <Link
+                  href={`/guide#${guide.id}`}
+                  className="focus-ring mt-1 inline-flex min-h-11 items-center gap-1 rounded-lg text-base font-semibold text-brand-700"
+                >
+                  {guide.title} 대처법 보기
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {isLow ? (
+            <ul className="mt-3 flex flex-col gap-2.5" aria-label="확인한 항목">
               {absentChecks(r).map((check) => (
-                <li key={check} className="flex gap-2 text-base text-slate-700">
-                  <Check className="mt-1 h-4 w-4 shrink-0 text-risk-low" aria-hidden />
+                <li key={check} className="flex gap-2.5 text-base text-slate-700">
+                  <Check className="mt-1 h-5 w-5 shrink-0 text-risk-low" aria-hidden />
                   {check}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-1.5 text-base text-slate-600">{r.summary}</p>
-          )}
-        </section>
-        <div className="hidden lg:block">{actionButtons}</div>
-      </aside>
-
-      <div className="flex min-w-0 flex-col gap-4 md:gap-5">
-        {/* NEXT ACTION */}
-        <section className="card overflow-hidden" aria-labelledby="actions-heading">
-          <h2 id="actions-heading" className="px-5 pt-5 text-lg font-bold text-navy-900">
-            {isLow ? "이렇게 한 번 더 확인해보세요" : "지금 해야 할 행동"}
-          </h2>
-          <ol className="mt-2 px-5 pb-2">
-            {actions.map((action, i) => (
-              <li key={action} className="flex gap-3 border-b border-line py-3 last:border-0">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
-                  {i + 1}
-                </span>
-                <p className={`text-base ${i === 0 && !isLow ? "font-semibold text-navy-900" : "text-slate-700"}`}>{action}</p>
-              </li>
-            ))}
-          </ol>
-          {!isLow && (
-            <div className="border-t border-line">
-              <button
-                type="button"
-                onClick={() => setRecoveryOpen((v) => !v)}
-                aria-expanded={recoveryOpen}
-                aria-controls="recovery-panel"
-                className="focus-ring flex min-h-14 w-full items-center justify-between gap-3 px-5 text-left text-base font-semibold text-navy-900 hover:bg-slate-50"
-              >
-                이미 링크를 눌렀거나 돈을 보냈다면?
-                <ChevronDown
-                  className={`h-5 w-5 shrink-0 text-slate-400 transition-transform duration-200 ${recoveryOpen ? "rotate-180" : ""}`}
-                  aria-hidden
-                />
-              </button>
-              {recoveryOpen && (
-                <div id="recovery-panel" className="animate-fade-in px-5 pb-5">
-                  <ul className="flex flex-col gap-2">
-                    {RECOVERY_STEPS.map((step) => (
-                      <li key={step} className="flex gap-2.5 text-base text-slate-700">
-                        <span className="mt-[0.6rem] h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" aria-hidden />
-                        {step}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-4 text-sm font-semibold text-slate-500">바로 전화하기</p>
-                  <div className="mt-2 grid gap-2 sm:grid-cols-3">
-                    {EMERGENCY_CONTACTS.map((c) => (
-                      <a
-                        key={c.tel}
-                        href={`tel:${c.tel}`}
-                        className="focus-ring flex min-h-14 items-center gap-3 rounded-xl border border-line px-4 py-2.5 hover:border-brand-200 hover:bg-brand-50/50"
-                      >
-                        <Phone className="h-5 w-5 shrink-0 text-brand-600" aria-hidden />
-                        <span className="min-w-0">
-                          <span className="block text-base font-bold tabular-nums text-navy-900">
-                            {c.tel} <span className="font-semibold">{c.name}</span>
-                          </span>
-                          <span className="block text-sm text-slate-500">{c.note}</span>
+            <ul className="mt-2 divide-y divide-line" aria-label="이렇게 판단했어요">
+              {explanations.map((item) => (
+                <li key={item.id} className="py-3.5">
+                  <p className="text-base font-bold text-navy-900">{item.title}</p>
+                  {item.quotes.length > 0 && (
+                    <p className="mt-1.5 flex flex-wrap gap-1.5">
+                      {item.quotes.map((q) => (
+                        <span
+                          key={q}
+                          className="max-w-full rounded-md bg-amber-50 px-2 py-0.5 text-base font-semibold text-amber-900 ring-1 ring-amber-200 [overflow-wrap:anywhere]"
+                        >
+                          “{q}”
                         </span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+                      ))}
+                    </p>
+                  )}
+                  <p className="mt-1.5 text-base text-slate-600">{item.why}</p>
+                </li>
+              ))}
+            </ul>
           )}
-          <Link
-            href={guide ? `/guide#${guide.id}` : "/guide"}
-            className="focus-ring flex min-h-12 items-center justify-between gap-2 border-t border-line bg-slate-50/70 px-5 text-sm font-semibold text-brand-700 hover:bg-slate-50"
-          >
-            {guide ? `${guide.title} 예방법 자세히 보기` : "안전 확인 방법 보기"}
-            <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
-          </Link>
-        </section>
 
-        <div className="lg:hidden">{actionButtons}</div>
-
-        {/* EVIDENCE */}
-        <section className="card px-5 py-5" aria-labelledby="message-heading">
-          <h2 id="message-heading" className="text-lg font-bold text-navy-900">
-            {highlights.length > 0 && !isLow ? "의심되는 문구" : "검사한 문자"}
-          </h2>
-          <div className="mt-3">
+          <h3 className="mt-4 flex flex-wrap items-baseline gap-x-2 text-base font-bold text-navy-900">
+            받은 문자
+            {r.source === "image" && <span className="text-sm font-semibold text-slate-500">캡처 이미지에서 읽음 (데모 OCR)</span>}
+          </h3>
+          <div className="mt-2">
             <HighlightedMessage
               message={r.message}
               highlights={highlights}
-              hint={isLow ? "사기 문자에 자주 쓰이는 표현에 참고로 밑줄을 그었어요." : undefined}
+              hint={isLow ? "사기 문자에 자주 쓰이는 표현에는 참고로 밑줄을 그었어요." : undefined}
             />
           </div>
         </section>
 
-        {/* DETAIL — 근거 상세는 필요할 때만 펼쳐 본다 */}
-        {detailParts.length > 0 && (
-          <section className="card overflow-hidden" aria-labelledby="detail-heading">
-            <button
-              type="button"
-              onClick={() => setDetailOpen((v) => !v)}
-              aria-expanded={detailOpen}
-              aria-controls="detail-panel"
-              className="focus-ring flex min-h-16 w-full items-center justify-between gap-3 px-5 py-4 text-left hover:bg-slate-50"
-            >
-              <span>
-                <span id="detail-heading" className="block text-lg font-bold text-navy-900">
-                  자세한 분석
-                </span>
-                <span className="mt-0.5 block text-sm text-slate-500">{detailParts.join(" · ")}</span>
-              </span>
-              <ChevronDown
-                className={`h-5 w-5 shrink-0 text-slate-400 transition-transform duration-200 ${detailOpen ? "rotate-180" : ""}`}
-                aria-hidden
-              />
-            </button>
-            {detailOpen && (
-              <div id="detail-panel" className="animate-fade-in border-t border-line">
-                {showSignals && (
-                  <div>
-                    <h3 className="px-5 pt-4 text-base font-bold text-navy-900">위험 신호</h3>
-                    <SignalList signals={r.signals} />
-                  </div>
-                )}
-                {(r.urls.length > 0 || r.phones.length > 0) && (
-                  <div className={`px-5 pb-2 ${showSignals ? "border-t border-line" : ""}`}>
-                    <h3 className="pt-4 text-base font-bold text-navy-900">링크·연락처</h3>
-                    <ul className="mt-1 divide-y divide-line">
-                      {r.urls.map((u) => (
-                        <li key={u.url} className="py-3.5">
-                          <p className="text-sm font-semibold text-slate-500">링크</p>
-                          <p className="mt-0.5 font-mono text-base font-medium text-navy-900 [overflow-wrap:anywhere]">{u.url}</p>
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {u.suspiciousTld && <Tag tone="danger">의심 도메인</Tag>}
-                            {u.officialMismatch && <Tag tone="danger">공식 주소와 다를 가능성</Tag>}
-                            {u.isShortened && <Tag tone="warn">단축 URL</Tag>}
-                            {!u.isHttps && <Tag tone="warn">보안 연결 아님</Tag>}
-                          </div>
-                          <ul className="mt-2 flex flex-col gap-1 text-base text-slate-600">
-                            {u.notes.map((note) => (
-                              <li key={note}>· {note}</li>
-                            ))}
-                          </ul>
-                        </li>
-                      ))}
-                      {r.phones.map((p) => (
-                        <li key={p.number} className="py-3.5">
-                          <p className="text-sm font-semibold text-slate-500">연락처 · {p.type}</p>
-                          <p className="mt-0.5 whitespace-nowrap text-base font-semibold tabular-nums text-navy-900">{p.number}</p>
-                          <ul className="mt-2 flex flex-col gap-1 text-base text-slate-600">
-                            {p.notes.map((note) => (
-                              <li key={note}>· {note}</li>
-                            ))}
-                          </ul>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-          </section>
-        )}
+        <div className="lg:hidden">{actionButtons}</div>
 
-        {/* 고지 · 분석 정보 · 기록 관리 */}
+        {/* 점수 근거 — 궁금한 분만 펼쳐 본다 */}
+        <section className="card overflow-hidden" aria-labelledby="detail-heading">
+          <button
+            type="button"
+            onClick={() => setDetailOpen((v) => !v)}
+            aria-expanded={detailOpen}
+            aria-controls="detail-panel"
+            className="focus-ring flex min-h-16 w-full items-center justify-between gap-3 px-5 py-4 text-left hover:bg-slate-50 md:px-6"
+          >
+            <span>
+              <span id="detail-heading" className="block text-lg font-bold text-navy-900">
+                점수는 이렇게 매겼어요
+              </span>
+              <span className="mt-0.5 block text-sm text-slate-500">
+                규칙 기반 분석 · 근거 {scoreItems.length}개
+                {r.urls.length > 0 && ` · 링크 ${r.urls.length}개`}
+                {r.phones.length > 0 && ` · 전화번호 ${r.phones.length}개`}
+              </span>
+            </span>
+            <ChevronDown
+              className={`h-5 w-5 shrink-0 text-slate-500 transition-transform duration-200 ${detailOpen ? "rotate-180" : ""}`}
+              aria-hidden
+            />
+          </button>
+          {detailOpen && (
+            <div id="detail-panel" className="animate-fade-in border-t border-line px-5 pb-5 pt-4 md:px-6">
+              <p className="text-base text-slate-600">
+                사기 문자에 자주 쓰이는 표현·링크·전화번호 패턴을 찾아 점수를 더해요. 여러 신호가 함께 나오면 더 높게 봐요.
+              </p>
+              {scoreItems.length > 0 ? (
+                <table className="mt-3 w-full text-base">
+                  <caption className="sr-only">점수 계산 근거</caption>
+                  <tbody className="divide-y divide-line">
+                    {scoreItems.map((item, i) => (
+                      <tr key={`${item.label}-${i}`}>
+                        <th scope="row" className={`py-2.5 pr-3 text-left font-normal ${item.sub ? "pl-4 text-slate-500" : "text-slate-700"}`}>
+                          {item.sub && <span aria-hidden>└ </span>}
+                          {item.label}
+                        </th>
+                        <td className={`whitespace-nowrap py-2.5 text-right tabular-nums ${item.sub ? "text-slate-500" : "font-semibold text-navy-900"}`}>
+                          +{item.points}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 border-navy-900/10">
+                      <th scope="row" className="pt-3 text-left font-bold text-navy-900">
+                        위험 점수
+                      </th>
+                      <td className="whitespace-nowrap pt-3 text-right font-extrabold tabular-nums text-navy-900">{r.score}점</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              ) : (
+                <p className="mt-3 text-base text-slate-600">사기 문자에 자주 쓰이는 표현을 찾지 못했어요.</p>
+              )}
+              {r.scoreCapNote && <p className="mt-2 text-sm text-slate-500">※ {r.scoreCapNote}</p>}
+              {approximate && <p className="mt-2 text-sm text-slate-500">※ 이전 버전에서 검사한 기록이라 신호별 기본 점수만 보여드려요.</p>}
+
+              {(r.urls.length > 0 || r.phones.length > 0) && (
+                <>
+                  <h3 className="mt-5 text-base font-bold text-navy-900">링크·전화번호</h3>
+                  <ul className="mt-1 divide-y divide-line">
+                    {r.urls.map((u) => (
+                      <li key={u.url} className="py-3.5">
+                        <p className="text-sm font-semibold text-slate-500">링크{u.isOfficial && " · 공식 주소로 보임"}</p>
+                        <p className="mt-0.5 font-mono text-base font-medium text-navy-900 [overflow-wrap:anywhere]">{u.url}</p>
+                        <ul className="mt-2 flex flex-col gap-1 text-base text-slate-600">
+                          {u.notes.map((note) => (
+                            <li key={note}>· {note}</li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                    {r.phones.map((p) => (
+                      <li key={p.number} className="py-3.5">
+                        <p className="text-sm font-semibold text-slate-500">전화번호 · {p.type}</p>
+                        <p className="mt-0.5 whitespace-nowrap text-base font-semibold tabular-nums text-navy-900">{p.number}</p>
+                        <ul className="mt-2 flex flex-col gap-1 text-base text-slate-600">
+                          {p.notes.map((note) => (
+                            <li key={note}>· {note}</li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* 고지 · 기록 관리 */}
         <div className="flex flex-col gap-3 px-1 text-sm text-slate-500">
           <p className="flex gap-2">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" aria-hidden />
+            <Info className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden />
             <span>
-              이 결과는 참고용 위험 신호 분석이며 실제 사기 여부를 확정하는 판정이 아닙니다. 금융기관·공공기관
-              등은 문자에 포함된 연락처가 아닌 공식 홈페이지나 공식 대표번호를 통해 직접 확인해주세요.
+              이 결과는 참고용 위험 신호 안내이며 실제 사기 여부를 확정하지 않아요. 은행·기관에는 문자에 적힌 연락처가 아닌
+              공식 홈페이지나 대표번호로 직접 확인해주세요.
             </span>
-          </p>
-          <p className="pl-6">
-            분석 방식: 규칙 기반 데모 엔진
           </p>
           <div className="pl-6">
             {confirmDelete ? (
               <span className="inline-flex flex-wrap items-center gap-2">
                 <span className="font-semibold text-navy-900">이 기록을 삭제할까요?</span>
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  className="focus-ring min-h-10 rounded-lg bg-risk-very px-3 text-sm font-semibold text-white"
-                >
+                <button type="button" onClick={handleDelete} className="focus-ring min-h-11 rounded-lg bg-risk-very px-4 text-sm font-semibold text-white">
                   삭제
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(false)}
-                  className="focus-ring min-h-10 rounded-lg px-3 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                  className="focus-ring min-h-11 rounded-lg px-4 text-sm font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   취소
                 </button>
@@ -355,7 +383,7 @@ export default function ResultView({ entry: initialEntry, isNew = false, notify:
               <button
                 type="button"
                 onClick={handleDelete}
-                className="focus-ring -ml-2 inline-flex min-h-10 items-center gap-1.5 rounded-lg px-2 font-semibold text-slate-500 hover:bg-slate-100 hover:text-navy-900"
+                className="focus-ring -ml-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 font-semibold text-slate-500 hover:bg-slate-100 hover:text-navy-900"
               >
                 <Trash2 className="h-4 w-4" aria-hidden />이 기록 삭제
               </button>
@@ -363,18 +391,15 @@ export default function ResultView({ entry: initialEntry, isNew = false, notify:
           </div>
         </div>
       </div>
-    </div>
-  );
-}
 
-function Tag({ children, tone }: { children: React.ReactNode; tone: "warn" | "danger" }) {
-  return (
-    <span
-      className={`rounded-full px-2.5 py-0.5 text-sm font-semibold ${
-        tone === "danger" ? "bg-risk-very-bg text-risk-very" : "bg-risk-caution-bg text-risk-caution"
-      }`}
-    >
-      {children}
-    </span>
+      {shareText && (
+        <SharePreviewDialog
+          text={shareText}
+          onClose={closeShare}
+          onShared={handleShared}
+          onError={() => show("이 브라우저에서는 공유할 수 없어요. 화면을 캡처해 보내주세요.", "info")}
+        />
+      )}
+    </div>
   );
 }

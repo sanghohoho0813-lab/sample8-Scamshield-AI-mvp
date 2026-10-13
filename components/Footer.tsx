@@ -18,6 +18,9 @@ export default function Footer() {
             <Link href="/guide" className="hover:text-navy-900">
               안전 가이드
             </Link>
+            <Link href="/help" className="hover:text-navy-900">
+              피해 대응
+            </Link>
             <a href={MIRAE_LINKS.homeHref} target="_blank" rel="noopener noreferrer" className="hover:text-navy-900">
               미래AI랩
             </a>

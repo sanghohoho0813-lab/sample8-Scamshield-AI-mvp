@@ -70,7 +70,7 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
         </div>
       )}
 
-      {entry && <ResultView key={entry.id} entry={entry} isNew={isNew} notify={show} />}
+      {entry && <ResultView key={entry.id} entry={entry} notify={show} />}
       {toastNode}
     </div>
   );

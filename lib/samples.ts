@@ -5,9 +5,11 @@ export interface SampleMessage {
   label: string;
   type: ScamType;
   text: string;
+  /** 사기·정상이 애매해 '주의'로 보여야 하는 예시 */
+  ambiguous?: boolean;
 }
 
-/** 분석 체험용 샘플 문자 12개 */
+/** 분석 체험용 샘플 문자 */
 export const SAMPLE_MESSAGES: SampleMessage[] = [
   {
     id: "s1",
@@ -53,8 +55,8 @@ export const SAMPLE_MESSAGES: SampleMessage[] = [
   },
   {
     id: "s8",
-    label: "계정 탈취 유도",
-    type: "finance",
+    label: "결제 알림 사칭",
+    type: "payment",
     text: "[OO카드] 해외에서 899,000원 결제가 완료되었습니다. 본인이 아닐 경우 즉시 소비자센터로 문의: 010-5551-2323",
   },
   {
@@ -81,16 +83,35 @@ export const SAMPLE_MESSAGES: SampleMessage[] = [
     type: "normal",
     text: "안녕하세요, 내일 오후 2시 정기 점검 예약이 확정되었습니다. 일정 변경이 필요하시면 매장으로 연락 부탁드립니다.",
   },
+  {
+    id: "s13",
+    label: "택배 보관 안내 사칭",
+    type: "delivery",
+    text: "[Web발신] 고객님의 택배가 주소불명으로 보관중입니다. 3일 내 미수령 시 반송됩니다. 주소 확인: han.gl/aB3dE",
+  },
+  {
+    id: "s14",
+    label: "정상 카드 승인 알림",
+    type: "normal",
+    text: "[KB국민카드] 홍*동님 10/12 14:20 일시불 32,000원 스타벅스 승인 누적 152,000원",
+  },
+  {
+    id: "s15",
+    label: "애매한 해외 승인 알림",
+    type: "payment",
+    ambiguous: true,
+    text: "[KB국민카드] 홍*동님 10/05 12:31 해외승인 1,250,000원 누적 2,340,000원. 본인 아닐 경우 고객센터 1588-1688",
+  },
 ];
 
 /** 입력 화면 "샘플로 체험" 칩: 짧은 이름 + 대표 샘플 (정상에 가까운 문자 포함) */
 export const FEATURED_SAMPLES: { chip: string; sample: SampleMessage }[] = [
   { chip: "택배", sample: SAMPLE_MESSAGES[0] },
   { chip: "은행", sample: SAMPLE_MESSAGES[1] },
-  { chip: "과태료", sample: SAMPLE_MESSAGES[2] },
   { chip: "가족", sample: SAMPLE_MESSAGES[3] },
-  { chip: "투자", sample: SAMPLE_MESSAGES[4] },
-  { chip: "정상 문자", sample: SAMPLE_MESSAGES[10] },
+  { chip: "결제", sample: SAMPLE_MESSAGES[7] },
+  { chip: "해외 승인 알림", sample: SAMPLE_MESSAGES[14] },
+  { chip: "정상 카드 알림", sample: SAMPLE_MESSAGES[13] },
 ];
 
 /**

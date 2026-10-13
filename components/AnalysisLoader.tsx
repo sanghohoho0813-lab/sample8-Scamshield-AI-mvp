@@ -11,7 +11,7 @@ const STEPS = [
   "분석이 끝났어요",
 ];
 
-const STEP_INTERVAL = 600;
+const STEP_INTERVAL = 450;
 
 interface AnalysisLoaderProps {
   onComplete: () => void;

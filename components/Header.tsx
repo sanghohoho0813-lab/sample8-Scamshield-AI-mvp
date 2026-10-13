@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: "/", label: "문자 검사", match: (p: string) => p === "/" },
   { href: "/history", label: "분석 기록", match: (p: string) => p.startsWith("/history") || p.startsWith("/result") },
   { href: "/guide", label: "안전 가이드", match: (p: string) => p.startsWith("/guide") },
+  { href: "/help", label: "피해 대응", match: (p: string) => p.startsWith("/help") },
 ];
 
 export default function Header() {

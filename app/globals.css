@@ -289,6 +289,21 @@ body {
   animation: toast-in 0.2s ease both;
 }
 
+/* 공유 미리보기: 모바일은 아래에서 올라오는 시트, 데스크톱은 가운데 대화상자 */
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-sheet-in {
+  animation: sheet-in 0.22s ease-out both;
+}
+
 @keyframes shimmer {
   from {
     background-position: 200% 0;
@@ -320,6 +335,7 @@ body {
   .animate-fade-up,
   .animate-fade-in,
   .animate-toast-in,
+  .animate-sheet-in,
   .skeleton {
     animation: none;
   }

@@ -139,7 +139,7 @@ export default function SettingsPage() {
           <dl className="divide-y divide-line">
             <div className="flex items-center justify-between gap-4 px-5 py-3.5">
               <dt className="text-slate-500">분석 방식</dt>
-              <dd className="text-right font-semibold text-navy-900">규칙 기반 데모 엔진</dd>
+              <dd className="text-right font-semibold text-navy-900">규칙 기반 분석</dd>
             </div>
             <div className="flex items-center justify-between gap-4 px-5 py-3.5">
               <dt className="text-slate-500">캡처 이미지 인식</dt>
