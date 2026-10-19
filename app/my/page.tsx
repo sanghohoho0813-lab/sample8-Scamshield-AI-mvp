@@ -40,7 +40,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 md:px-6 md:py-10">
-      <h1 className="text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">설정</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-navy-900 md:text-3xl">설정</h1>
 
       {/* 글자 크기 */}
       <section aria-labelledby="font-heading" className="mt-7">

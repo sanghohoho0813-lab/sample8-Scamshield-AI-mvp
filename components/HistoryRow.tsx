@@ -24,7 +24,7 @@ export default function HistoryRow({ entry, timeLabel }: HistoryRowProps) {
   return (
     <Link
       href={`/result/${entry.id}`}
-      className="focus-ring group flex items-center gap-3.5 px-4 py-3.5 transition-colors hover:bg-slate-50 md:px-5"
+      className="focus-ring group flex items-center gap-3.5 px-4 py-4 transition-colors hover:bg-slate-50 md:px-5"
     >
       <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${style.bg} ${style.text}`}>
         <Icon className="h-5 w-5" aria-hidden />
@@ -34,11 +34,8 @@ export default function HistoryRow({ entry, timeLabel }: HistoryRowProps) {
           <span className="min-w-0 flex-1 truncate text-base font-bold text-navy-900">{typeName(entry.scamTypeLabel)}</span>
           <span className="shrink-0 whitespace-nowrap text-sm tabular-nums text-slate-500">{timeLabel}</span>
         </span>
-        <span className="mt-0.5 flex items-center gap-1.5 whitespace-nowrap text-sm">
-          <span className={`shrink-0 font-semibold ${style.text}`}>위험 {style.label}</span>
-          <span className="shrink-0 text-slate-300" aria-hidden>
-            ·
-          </span>
+        <span className="mt-1 flex items-center gap-2 whitespace-nowrap text-sm">
+          <span className={`shrink-0 rounded-md px-1.5 py-px font-semibold ${style.bg} ${style.text}`}>위험 {style.label}</span>
           <span className="min-w-0 truncate text-slate-500">{entry.preview}</span>
           {entry.sharedAt && (
             <span className="ml-auto inline-flex shrink-0 items-center gap-1 pl-2 font-semibold text-brand-700">

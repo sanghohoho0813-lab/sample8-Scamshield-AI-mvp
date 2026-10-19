@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, LifeBuoy, X } from "lucide-react";
+import { ArrowRight, Check, LifeBuoy, MessageSquareText, X } from "lucide-react";
 import { GOLDEN_RULES, GUIDES } from "@/lib/guides";
+import { keepDots } from "@/lib/typography";
 
 export const metadata: Metadata = {
   title: "안전 가이드",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 export default function GuidePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-10">
-      <h1 className="text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">안전 가이드</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-navy-900 md:text-3xl">안전 가이드</h1>
       <p className="mt-1.5 max-w-2xl text-base text-slate-500">상황별로 자주 오는 문자와 확인 방법, 하지 말아야 할 행동을 정리했어요.</p>
 
       <Link
@@ -27,7 +28,7 @@ export default function GuidePage() {
 
       {/* 공통 원칙 */}
       <section aria-labelledby="rules-heading" className="mt-6 rounded-2xl bg-brand-50 px-5 py-6 md:px-8 md:py-7">
-        <h2 id="rules-heading" className="text-lg font-bold text-navy-900">
+        <h2 id="rules-heading" className="text-lg font-bold tracking-tight text-navy-900">
           어떤 문자든 이 다섯 가지면 충분해요
         </h2>
         <ol className="mt-3 grid gap-x-10 gap-y-3 md:grid-cols-2">
@@ -36,7 +37,7 @@ export default function GuidePage() {
               <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
                 {i + 1}
               </span>
-              <p className="text-base text-slate-800">{rule}</p>
+              <p className="text-base text-slate-800">{keepDots(rule)}</p>
             </li>
           ))}
         </ol>
@@ -44,7 +45,7 @@ export default function GuidePage() {
 
       {/* 상황별 */}
       <section aria-labelledby="types-heading" className="mt-10">
-        <h2 id="types-heading" className="text-xl font-bold text-navy-900">
+        <h2 id="types-heading" className="text-xl font-bold tracking-tight text-navy-900">
           상황별 대처법
         </h2>
         <nav aria-label="유형 바로가기" className="-mx-4 mt-3 overflow-x-auto px-4 pb-1 md:mx-0 md:px-0">
@@ -53,8 +54,11 @@ export default function GuidePage() {
               <li key={guide.id}>
                 <a
                   href={`#${guide.id}`}
-                  className="focus-ring inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-line bg-white px-4 text-base font-semibold text-slate-600 hover:border-brand-200 hover:text-navy-900"
+                  className="focus-ring inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-full bg-white py-1 pl-1.5 pr-4 text-base font-semibold text-navy-900 shadow-[var(--shadow-subtle)] ring-1 ring-line hover:ring-brand-200"
                 >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-700">
+                    <guide.icon className="h-4 w-4" aria-hidden />
+                  </span>
                   {guide.title}
                 </a>
               </li>
@@ -78,12 +82,18 @@ export default function GuidePage() {
                   {guide.title}
                 </h3>
               </div>
-              <p className="mt-2.5 text-base text-slate-600">{guide.summary}</p>
+              <p className="mt-2.5 text-base text-slate-600">{keepDots(guide.summary)}</p>
 
-              <p className="mt-4 text-sm font-bold text-slate-500">이런 문자가 와요</p>
-              <p className="mt-1.5 rounded-xl rounded-tl-sm bg-slate-100 px-4 py-3 text-base text-slate-700 [overflow-wrap:anywhere]">
-                {guide.example}
-              </p>
+              {/* 대표 패턴 — 휴대폰에서 받은 문자처럼 보여준다 */}
+              <div className="mt-4 rounded-2xl bg-surface px-3.5 pb-4 pt-3">
+                <p className="flex items-center gap-1.5 text-sm font-semibold text-slate-500">
+                  <MessageSquareText className="h-4 w-4" aria-hidden />
+                  이런 문자가 와요
+                </p>
+                <p className="mt-2 max-w-[94%] rounded-2xl rounded-tl-md bg-white px-4 py-3 text-base text-slate-800 shadow-[var(--shadow-subtle)] ring-1 ring-line [overflow-wrap:anywhere]">
+                  {keepDots(guide.example)}
+                </p>
+              </div>
 
               <div className="mt-4 grid gap-4 border-t border-line pt-4 sm:grid-cols-2">
                 <div>
@@ -92,7 +102,7 @@ export default function GuidePage() {
                     {guide.checks.map((item) => (
                       <li key={item} className="flex gap-2 text-base text-slate-800">
                         <Check className="mt-1 h-5 w-5 shrink-0 text-risk-low" aria-hidden />
-                        {item}
+                        {keepDots(item)}
                       </li>
                     ))}
                   </ul>
@@ -103,7 +113,7 @@ export default function GuidePage() {
                     {guide.donts.map((item) => (
                       <li key={item} className="flex gap-2 text-base text-slate-800">
                         <X className="mt-1 h-5 w-5 shrink-0 text-risk-high" aria-hidden />
-                        {item}
+                        {keepDots(item)}
                       </li>
                     ))}
                   </ul>

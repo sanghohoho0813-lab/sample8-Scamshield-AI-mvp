@@ -52,7 +52,7 @@
   --shadow-overlay: 0 24px 64px rgba(16, 27, 63, 0.18);
 
   /* Radius — small / medium / large */
-  --radius-xl: 0.75rem;
+  --radius-xl: 0.875rem;
   --radius-2xl: 1.25rem;
   --radius-3xl: 1.75rem;
 
@@ -160,6 +160,33 @@ body {
   .btn-secondary:hover {
     background: #f8fafc;
     border-color: #cfd8e8;
+  }
+
+  /* 핵심 실행 버튼 (검사하기·하단 고정 버튼) — 엄지로 누르기 쉬운 56px */
+  .btn-lg {
+    min-height: 3.5rem;
+    font-size: var(--text-lg);
+    border-radius: 1rem;
+  }
+
+  /* 홈 브랜드 영역 (데스크톱) — 상단 헤더 아래에서 시작해 오른쪽 위에 은은한 빛 */
+  @media (min-width: 1024px) {
+    .home-hero {
+      background:
+        radial-gradient(60% 100% at 100% 0%, rgba(97, 144, 244, 0.3) 0%, rgba(97, 144, 244, 0) 60%),
+        linear-gradient(180deg, var(--color-brand-700) 0%, #2157e0 100%);
+    }
+  }
+  /* 모바일·태블릿: 제목 영역에 브랜드 색을 깔고, 입력 카드가 그 아래쪽에 걸쳐 올라온다 */
+  .home-hero-top {
+    background:
+      radial-gradient(80% 50% at 100% 100%, rgba(97, 144, 244, 0.3) 0%, rgba(97, 144, 244, 0) 70%),
+      linear-gradient(180deg, var(--color-brand-700) 0%, #2157e0 100%);
+  }
+  @media (min-width: 1024px) {
+    .home-hero-top {
+      background: none;
+    }
   }
 
   /* 키보드 사용자를 위한 본문 바로가기 — 포커스될 때만 보인다 */

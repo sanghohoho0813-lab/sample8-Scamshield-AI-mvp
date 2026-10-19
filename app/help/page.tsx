@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ExternalLink, Phone, ScanSearch, ShieldBan } from "lucide-react";
 import RecoveryPicker from "@/components/RecoveryPicker";
 import { CONTACT_LIST } from "@/lib/recovery";
+import { keepDots } from "@/lib/typography";
 
 export const metadata: Metadata = {
   title: "피해 대응",
@@ -19,7 +20,7 @@ export default function HelpPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 md:px-6 md:py-10">
       <p className="text-sm font-bold text-brand-700">피해 대응</p>
-      <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">이미 링크를 눌렀거나 돈을 보냈나요?</h1>
+      <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 md:text-3xl">이미 링크를 눌렀거나 돈을 보냈나요?</h1>
       <p className="mt-2 text-base text-slate-600">
         당황하지 않아도 돼요. 어떤 상황인지 고르면 지금 할 일을 순서대로 알려드려요.
       </p>
@@ -42,7 +43,7 @@ export default function HelpPage() {
             <span className="block text-lg font-bold">
               <span className="tabular-nums">{primary.tel}</span> {primary.name}
             </span>
-            <span className="block text-base text-white/80">{primary.when}</span>
+            <span className="block text-base text-white/80">{keepDots(primary.when)}</span>
           </span>
           <span className="shrink-0 text-base font-semibold">전화</span>
         </a>
@@ -55,7 +56,7 @@ export default function HelpPage() {
                   <span className="block text-base font-bold text-navy-900">
                     <span className="tabular-nums">{c.tel}</span> {c.name}
                   </span>
-                  <span className="block text-sm text-slate-500">{c.when}</span>
+                  <span className="block text-sm text-slate-500">{keepDots(c.when)}</span>
                 </span>
                 <span className="shrink-0 text-base font-semibold text-brand-700">전화</span>
               </a>

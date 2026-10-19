@@ -193,7 +193,7 @@ export default function AnalyzeForm() {
   const currentLength = mode === "text" ? text.length : ocrText.length;
 
   return (
-    <div className="card p-4 md:p-6">
+    <div className="card border-transparent p-4 shadow-[var(--shadow-raised)] md:p-6">
       {/* 입력 방식 */}
       <div className="grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1" role="tablist" aria-label="입력 방식">
         {(
@@ -397,7 +397,7 @@ export default function AnalyzeForm() {
         )
       )}
 
-      <button type="button" onClick={handleSubmit} disabled={submitting} className="btn-primary mt-4 w-full text-lg">
+      <button type="button" onClick={handleSubmit} disabled={submitting} className="btn-primary btn-lg mt-4 w-full">
         위험도 검사하기
       </button>
 

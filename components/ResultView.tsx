@@ -5,15 +5,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
+  Banknote,
   Check,
   ChevronDown,
+  ChevronRight,
+  HeartHandshake,
   Info,
+  KeyRound,
+  Landmark,
   LifeBuoy,
+  Link2,
+  Phone,
   Repeat2,
   ScanSearch,
   Share2,
   ShieldAlert,
   ShieldCheck,
+  Smartphone,
+  TimerReset,
   Trash2,
   TriangleAlert,
   type LucideIcon,
@@ -24,6 +33,7 @@ import { guideForScamType } from "@/lib/guides";
 import { deleteEntry, getHistory, markShared } from "@/lib/storage";
 import { formatRelative } from "@/lib/format";
 import { buildShareText } from "@/lib/share";
+import { keepDots } from "@/lib/typography";
 import {
   REPEAT_WINDOW_DAYS,
   absentChecks,
@@ -45,6 +55,17 @@ interface ResultViewProps {
   /** 화면 안내 메시지 (페이지의 토스트 하나를 공유) */
   notify: (message: string, tone?: "success" | "info") => void;
 }
+
+/** 근거 종류별 아이콘 — 글을 읽기 전에 무엇에 관한 근거인지 먼저 보이게 */
+const EVIDENCE_ICON: Record<string, LucideIcon> = {
+  link: Link2,
+  credential: KeyRound,
+  money: Banknote,
+  urgency: TimerReset,
+  impersonation: Landmark,
+  emotion: HeartHandshake,
+  phone: Phone,
+};
 
 const STATUS: Record<RiskLevel, { icon: LucideIcon; label: string }> = {
   "very-high": { icon: ShieldAlert, label: "위험 매우 높음" },
@@ -88,24 +109,7 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
     router.replace("/history?deleted=1");
   };
 
-  const actionButtons = (
-    <div className="flex flex-col gap-2.5">
-      <button type="button" onClick={() => setShareText(buildShareText(entry, window.location.origin))} className="btn-primary w-full">
-        <Share2 className="h-5 w-5" aria-hidden />
-        가족에게 공유하기
-      </button>
-      {entry.sharedAt && (
-        <p className="flex items-center justify-center gap-1 text-sm text-slate-500">
-          <Check className="h-4 w-4 text-brand-600" aria-hidden />
-          {formatRelative(entry.sharedAt)} 공유했어요
-        </p>
-      )}
-      <Link href="/" className="btn-secondary w-full">
-        <ScanSearch className="h-5 w-5" aria-hidden />
-        다른 문자 검사하기
-      </Link>
-    </div>
-  );
+  const openShare = () => setShareText(buildShareText(entry, window.location.origin));
 
   return (
     <div className="grid gap-4 md:gap-5 lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
@@ -122,15 +126,20 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
             {verdictHeadline(r)}
           </h1>
 
-          <div className="mt-4 rounded-xl bg-slate-50 px-4 py-4">
+          <div className="mt-4 rounded-2xl bg-surface px-4 py-4">
             <h2 className="text-sm font-bold text-slate-500">{isLow ? "그래도 이것만 확인하세요" : "지금 이렇게 하세요"}</h2>
-            <ol className="mt-2.5 flex flex-col gap-3" aria-label="지금 해야 할 행동">
+            <ol className="mt-3" aria-label="지금 해야 할 행동">
               {steps.map((step, i) => (
-                <li key={step} className="flex gap-3">
-                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
+                <li key={step} className="relative flex gap-3 pb-4 last:pb-0">
+                  {i < steps.length - 1 && <span className="absolute bottom-0 left-3 top-7 w-px bg-brand-200" aria-hidden />}
+                  <span
+                    className={`relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                      i === 0 ? "bg-brand-600 text-white" : "bg-white text-brand-700 ring-2 ring-inset ring-brand-200"
+                    }`}
+                  >
                     {i + 1}
                   </span>
-                  <p className={i === 0 ? "text-lg font-bold leading-snug text-navy-900" : "text-base text-slate-700"}>{step}</p>
+                  <p className={i === 0 ? "text-lg font-bold leading-snug text-navy-900" : "text-base text-slate-700"}>{keepDots(step)}</p>
                 </li>
               ))}
             </ol>
@@ -139,6 +148,13 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
           <div className="mt-5">
             <RiskMeter level={r.level} score={r.score} />
           </div>
+
+          {entry.sharedAt && (
+            <p className="-mx-5 -mb-5 mt-5 flex items-center gap-2 rounded-b-[var(--radius-2xl)] border-t border-line bg-brand-50/60 px-5 py-3 text-sm font-semibold text-brand-800 md:-mx-6 md:px-6">
+              <Check className="h-4 w-4 shrink-0" aria-hidden />
+              {formatRelative(entry.sharedAt)} 가족에게 공유했어요
+            </p>
+          )}
         </section>
 
         {repeats > 0 && (
@@ -160,7 +176,16 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
           </div>
         )}
 
-        <div className="hidden lg:block">{actionButtons}</div>
+        <div className="hidden flex-col gap-2.5 lg:flex">
+          <button type="button" onClick={openShare} className="btn-primary btn-lg w-full">
+            <Share2 className="h-5 w-5" aria-hidden />
+            가족에게 공유하기
+          </button>
+          <Link href="/" className="btn-secondary w-full">
+            <ScanSearch className="h-5 w-5" aria-hidden />
+            다른 문자 검사하기
+          </Link>
+        </div>
       </aside>
 
       <div className="flex min-w-0 flex-col gap-4 md:gap-5">
@@ -168,11 +193,13 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
         {isLow ? (
           <Link
             href="/help"
-            className="focus-ring card flex min-h-16 items-center gap-3 px-5 py-4 text-base font-semibold text-navy-900 hover:border-brand-200"
+            className="focus-ring card group flex min-h-16 items-center gap-3.5 px-5 py-4 text-base font-semibold text-navy-900 hover:border-brand-200"
           >
-            <LifeBuoy className="h-5 w-5 shrink-0 text-brand-600" aria-hidden />
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700">
+              <LifeBuoy className="h-5 w-5" aria-hidden />
+            </span>
             <span className="flex-1">이미 링크를 눌렀거나 돈을 보냈다면</span>
-            <ArrowRight className="h-5 w-5 shrink-0 text-slate-400" aria-hidden />
+            <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </Link>
         ) : (
           <section className="card px-5 py-5 md:px-6" aria-labelledby="recovery-heading">
@@ -197,13 +224,13 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
           </h2>
 
           {!isLow && guide && (
-            <div className="mt-3 flex gap-3 rounded-xl border border-line px-4 py-3.5">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+            <div className="mt-3 flex gap-3.5 rounded-2xl bg-brand-50/70 px-4 py-4">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-brand-700 shadow-[var(--shadow-subtle)]">
                 <guide.icon className="h-5 w-5" aria-hidden />
               </span>
               <div className="min-w-0">
                 <p className="text-base font-bold text-navy-900">{guide.title} 문자와 비슷해요</p>
-                <p className="mt-0.5 text-base text-slate-600">{guide.summary}</p>
+                <p className="mt-0.5 text-base text-slate-600">{keepDots(guide.summary)}</p>
                 <Link
                   href={`/guide#${guide.id}`}
                   className="focus-ring mt-1 inline-flex min-h-11 items-center gap-1 rounded-lg text-base font-semibold text-brand-700"
@@ -226,24 +253,32 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
             </ul>
           ) : (
             <ul className="mt-2 divide-y divide-line" aria-label="이렇게 판단했어요">
-              {explanations.map((item) => (
-                <li key={item.id} className="py-3.5">
-                  <p className="text-base font-bold text-navy-900">{item.title}</p>
-                  {item.quotes.length > 0 && (
-                    <p className="mt-1.5 flex flex-wrap gap-1.5">
-                      {item.quotes.map((q) => (
-                        <span
-                          key={q}
-                          className="max-w-full rounded-md bg-amber-50 px-2 py-0.5 text-base font-semibold text-amber-900 ring-1 ring-amber-200 [overflow-wrap:anywhere]"
-                        >
-                          “{q}”
-                        </span>
-                      ))}
-                    </p>
-                  )}
-                  <p className="mt-1.5 text-base text-slate-600">{item.why}</p>
-                </li>
-              ))}
+              {explanations.map((item) => {
+                const Icon = item.title === "모르는 앱을 설치하게 해요" ? Smartphone : (EVIDENCE_ICON[item.id] ?? TriangleAlert);
+                return (
+                  <li key={item.id} className="flex gap-3.5 py-4">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-100">
+                      <Icon className="h-5 w-5" aria-hidden />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-base font-bold text-navy-900">{keepDots(item.title)}</p>
+                      {item.quotes.length > 0 && (
+                        <p className="mt-1.5 flex flex-wrap gap-1.5">
+                          {item.quotes.map((q) => (
+                            <span
+                              key={q}
+                              className="max-w-full rounded-md bg-amber-50 px-2 py-0.5 text-base font-semibold text-amber-900 ring-1 ring-amber-200 [overflow-wrap:anywhere]"
+                            >
+                              “{q}”
+                            </span>
+                          ))}
+                        </p>
+                      )}
+                      <p className="mt-1.5 text-base text-slate-600">{keepDots(item.why)}</p>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
 
@@ -259,8 +294,6 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
             />
           </div>
         </section>
-
-        <div className="lg:hidden">{actionButtons}</div>
 
         {/* 점수 근거 — 궁금한 분만 펼쳐 본다 */}
         <section className="card overflow-hidden" aria-labelledby="detail-heading">
@@ -389,6 +422,23 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
               </button>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* 상세 화면의 실행 버튼은 엄지가 닿는 하단에 고정 — 하단 탭은 이 화면에서 숨긴다 */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur-md lg:hidden">
+        {/* 폭이 좁거나 글자를 크게 키우면 보조 버튼은 아이콘만 남겨 주 버튼 문구가 한 줄로 유지되게 한다 (rem 기준 컨테이너 쿼리) */}
+        <div className="@container mx-auto flex max-w-xl gap-2.5">
+          <Link href="/" className="btn-secondary btn-lg shrink-0 px-3.5" aria-label="다른 문자 검사하기">
+            <ScanSearch className="h-5 w-5" aria-hidden />
+            <span className="hidden text-base @min-[22rem]:inline" aria-hidden>
+              다른 문자
+            </span>
+          </Link>
+          <button type="button" onClick={openShare} className="btn-primary btn-lg min-w-0 flex-1 whitespace-nowrap px-4 text-[1.0625rem]">
+            <Share2 className="h-5 w-5 shrink-0" aria-hidden />
+            <span className="truncate">가족에게 공유하기</span>
+          </button>
         </div>
       </div>
 

@@ -23,7 +23,7 @@ export default function RecentChecks() {
   return (
     <section aria-labelledby="recent-heading">
       <div className="flex items-center justify-between gap-3">
-        <h2 id="recent-heading" className="text-xl font-bold text-navy-900">
+        <h2 id="recent-heading" className="text-xl font-bold tracking-tight text-navy-900">
           최근 검사
         </h2>
         <Link href="/history" className="focus-ring inline-flex min-h-11 items-center gap-1 rounded-lg text-sm font-semibold text-brand-700 hover:text-brand-800">

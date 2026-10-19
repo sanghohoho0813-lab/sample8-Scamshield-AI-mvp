@@ -15,16 +15,26 @@ const NAV_ITEMS = [
 export default function Header() {
   const pathname = usePathname();
   const settingsActive = pathname.startsWith("/my");
+  // 모바일 홈은 아래 브랜드 영역과 이어지도록 헤더도 같은 색으로 칠한다
+  const onBrand = pathname === "/";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-40 border-b backdrop-blur-md md:border-line md:bg-white/90 ${
+        onBrand ? "border-transparent bg-brand-700" : "border-line bg-white/90"
+      }`}
+    >
       <DateTimeBar />
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 md:h-16 md:px-6">
         <Link href="/" className="focus-ring flex items-center gap-2 rounded-lg" aria-label="ScamShield 홈">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white">
+          <span
+            className={`flex h-8 w-8 items-center justify-center rounded-[0.625rem] md:bg-brand-600 md:text-white ${
+              onBrand ? "bg-white text-brand-700" : "bg-brand-600 text-white"
+            }`}
+          >
             <ShieldCheck className="h-5 w-5" aria-hidden />
           </span>
-          <span className="text-lg font-bold tracking-tight text-navy-900">ScamShield</span>
+          <span className={`text-lg font-bold tracking-tight md:text-navy-900 ${onBrand ? "text-white" : "text-navy-900"}`}>ScamShield</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="주요 메뉴">

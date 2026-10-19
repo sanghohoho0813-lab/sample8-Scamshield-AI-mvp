@@ -59,7 +59,7 @@ export default function HistoryPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 md:px-6 md:py-10">
-      <h1 className="text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">분석 기록</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-navy-900 md:text-3xl">분석 기록</h1>
       <p className="mt-1.5 text-base text-slate-500">
         {entries && entries.length > 0
           ? `검사 ${entries.length}건 · 눌러서 결과를 다시 볼 수 있어요.`

@@ -66,7 +66,7 @@ export default function RootLayout({
           </main>
           <SampleBridgeCTA />
           <Footer />
-          <div className="h-[calc(4rem+env(safe-area-inset-bottom))] md:hidden" aria-hidden />
+          {/* 하단 탭(또는 상세 화면의 고정 버튼) 높이만큼의 여백도 함께 그린다 */}
           <MobileNav />
         </SettingsProvider>
       </body>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ExternalLink, Phone } from "lucide-react";
 import { SITUATIONS, findSituation, type SituationId } from "@/lib/recovery";
+import { keepDots } from "@/lib/typography";
 
 interface RecoveryPickerProps {
   /** 주소의 #money 같은 해시와 선택 상태를 맞출지 (피해 대응 페이지) */
@@ -47,14 +48,20 @@ export default function RecoveryPicker({ syncHash = false, idPrefix = "recovery"
               onClick={() => choose(id)}
               aria-pressed={active}
               aria-controls={panelId}
-              className={`focus-ring flex min-h-16 items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-colors sm:items-start ${
-                active ? "border-brand-600 bg-brand-50" : "border-line bg-white hover:border-brand-200"
+              className={`focus-ring flex min-h-[4.25rem] items-center gap-3 rounded-2xl border px-3.5 py-3 text-left transition-colors ${
+                active ? "border-brand-600 bg-brand-50 ring-1 ring-brand-600" : "border-line bg-white hover:border-brand-200 hover:bg-slate-50/60"
               }`}
             >
-              <Icon className={`h-6 w-6 shrink-0 sm:mt-0.5 sm:h-5 sm:w-5 ${active ? "text-brand-700" : "text-slate-500"}`} aria-hidden />
-              <span className="min-w-0">
+              <span
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors ${
+                  active ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600"
+                }`}
+              >
+                <Icon className="h-5 w-5" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
                 <span className={`block text-base font-bold leading-snug ${active ? "text-brand-800" : "text-navy-900"}`}>{label}</span>
-                <span className="mt-0.5 block text-sm leading-snug text-slate-500">{hint}</span>
+                <span className="mt-0.5 block text-sm leading-snug text-slate-500">{keepDots(hint)}</span>
               </span>
             </button>
           );
@@ -63,16 +70,17 @@ export default function RecoveryPicker({ syncHash = false, idPrefix = "recovery"
 
       <div id={panelId} aria-live="polite">
         {situation && (
-          <div className="animate-fade-in mt-4 rounded-xl bg-slate-50 px-4 py-4 md:px-5">
-            <p className="text-base font-semibold text-navy-900">{situation.lead}</p>
-            <ol className="mt-3 flex flex-col gap-3.5">
+          <div className="animate-fade-in mt-4 rounded-2xl bg-surface px-4 py-4 md:px-5">
+            <p className="text-base font-semibold text-navy-900">{keepDots(situation.lead)}</p>
+            <ol className="mt-4">
               {situation.steps.map((step, i) => (
-                <li key={step.text} className="flex gap-3">
-                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy-900 text-sm font-bold text-white">
+                <li key={step.text} className="relative flex gap-3 pb-5 last:pb-0">
+                  {i < situation.steps.length - 1 && <span className="absolute bottom-0 left-3 top-7 w-px bg-slate-300" aria-hidden />}
+                  <span className="relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy-900 text-sm font-bold text-white">
                     {i + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-base text-slate-800">{step.text}</p>
+                    <p className="text-base text-slate-800">{keepDots(step.text)}</p>
                     {step.call && (
                       <a
                         href={`tel:${step.call.tel}`}

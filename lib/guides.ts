@@ -6,6 +6,8 @@ export interface Guide {
   id: string;
   icon: LucideIcon;
   title: string;
+  /** 아이콘 타일처럼 좁은 자리에 쓰는 짧은 이름 */
+  short: string;
   /** 어떤 수법인지 한 줄 */
   summary: string;
   /** 대표 패턴 — 실제로 이런 문자가 와요 */
@@ -24,6 +26,7 @@ export const GUIDES: Guide[] = [
     id: "delivery",
     icon: Truck,
     title: "택배 사칭",
+    short: "택배",
     summary: "배송 문제를 핑계로 가짜 사이트에서 주소·카드 정보를 입력하게 해요.",
     example: "[국제발신] 주소 불일치로 배송이 보류되었습니다. 아래 링크에서 주소를 수정해주세요.",
     phrases: ["주소 불일치", "반송 예정", "보관 중"],
@@ -34,6 +37,7 @@ export const GUIDES: Guide[] = [
     id: "institution",
     icon: Landmark,
     title: "기관 사칭",
+    short: "기관 사칭",
     summary: "은행·카드사·경찰·정부를 내세워 계좌 정지나 사건 연루로 겁을 줘요.",
     example: "[Web발신] 고객님 계좌가 정지될 예정입니다. 즉시 아래 링크에서 본인 인증 바랍니다.",
     phrases: ["계좌 정지 예정", "본인 인증", "사건 연루", "과태료 미납"],
@@ -48,6 +52,7 @@ export const GUIDES: Guide[] = [
     id: "family",
     icon: HeartHandshake,
     title: "가족·지인 사칭",
+    short: "가족·지인",
     summary: "휴대폰이 고장 났다며 새 번호로 연락해 돈이나 상품권을 요구해요.",
     example: "엄마 나 폰 액정 깨져서 친구 폰으로 문자해. 급한데 상품권 좀 사줄 수 있어?",
     phrases: ["휴대폰 고장", "급하게 송금", "상품권 핀번호"],
@@ -58,6 +63,7 @@ export const GUIDES: Guide[] = [
     id: "payment",
     icon: CreditCard,
     title: "결제 알림 사칭",
+    short: "결제 알림",
     summary: "하지 않은 결제가 됐다고 놀라게 한 뒤, 문자 속 번호로 전화하게 해요.",
     example: "[OO카드] 해외에서 899,000원 결제가 완료되었습니다. 본인이 아닐 경우 문의 010-…",
     phrases: ["해외 결제 완료", "본인이 아닐 경우", "주문하지 않으셨다면"],
@@ -68,6 +74,7 @@ export const GUIDES: Guide[] = [
     id: "loan",
     icon: PiggyBank,
     title: "대출 사기",
+    short: "대출",
     summary: "정부지원·저금리 대출을 내세워 수수료나 기존 대출 상환을 먼저 요구해요.",
     example: "정부지원 서민대출 대상자로 선정되셨습니다. 무담보 당일 대출 가능. 상담 010-…",
     phrases: ["대상자 선정", "무담보·당일 대출", "선입금 수수료"],
@@ -78,6 +85,7 @@ export const GUIDES: Guide[] = [
     id: "investment",
     icon: TrendingUp,
     title: "투자 사기",
+    short: "투자",
     summary: "높은 수익을 보장한다며 리딩방이나 가짜 투자 앱으로 끌어들여요.",
     example: "오늘만 공개되는 비공개 종목 정보. 300% 수익 보장, 지금 바로 리딩방 입장",
     phrases: ["수익 보장", "오늘만 공개", "리딩방"],
@@ -88,6 +96,7 @@ export const GUIDES: Guide[] = [
     id: "event",
     icon: Gift,
     title: "당첨·부고 위장",
+    short: "당첨·부고",
     summary: "당첨 선물이나 부고·청첩장을 핑계로 링크를 누르게 해요.",
     example: "[부고] 故 OOO님께서 별세하셨습니다. 장례식장 안내 https://bit.ly/…",
     phrases: ["당첨 축하", "부고 안내", "모바일 청첩장"],
