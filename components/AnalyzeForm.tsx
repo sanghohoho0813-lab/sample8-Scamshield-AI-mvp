@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, ClipboardPaste, ImageUp, MessageSquareText, RefreshCw, Trash2, X } from "lucide-react";
+import { ChevronDown, CircleAlert, ClipboardPaste, ImageUp, MessageSquareText, RefreshCw, Trash2, X } from "lucide-react";
 import type { AnalysisResult } from "@/lib/types";
 import { analyzeMessage } from "@/lib/ai";
 import { saveAnalysis } from "@/lib/storage";
@@ -14,6 +14,8 @@ type Mode = "text" | "image";
 type OcrStatus = "idle" | "reading" | "ready";
 
 const MIN_LENGTH = 6;
+/** 입력칸은 내용에 맞춰 늘어나되, 이 높이를 넘으면 칸 안에서 스크롤한다 */
+const MAX_TEXTAREA_PX = 360;
 const ACCEPTED = ["image/png", "image/jpeg", "image/webp"];
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 /** 다른 메뉴를 보고 돌아와도 입력 중인 문자가 남도록 이 탭 동안만 보관 */
@@ -44,6 +46,7 @@ export default function AnalyzeForm() {
   const [ocrText, setOcrText] = useState("");
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [samplesOpen, setSamplesOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -79,6 +82,16 @@ export default function AnalyzeForm() {
   useEffect(() => {
     setCanReadClipboard(typeof navigator.clipboard?.readText === "function");
   }, []);
+
+  // 긴 문자를 붙여넣어도 한눈에 보이도록 입력칸을 내용 높이에 맞춘다 (처음 높이는 rows로 고정 — 화면이 튀지 않음)
+  useLayoutEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    const natural = el.scrollHeight;
+    el.style.height = `${Math.min(natural, MAX_TEXTAREA_PX)}px`;
+    el.style.overflowY = natural > MAX_TEXTAREA_PX ? "auto" : "hidden";
+  }, [text, mode]);
 
   useEffect(() => {
     return () => {
@@ -168,6 +181,8 @@ export default function AnalyzeForm() {
     const invalid = validate(value);
     if (invalid) {
       setError(invalid);
+      // 무엇을 고쳐야 하는지 바로 보이도록 입력칸으로 이동
+      if (mode === "text") textareaRef.current?.focus();
       return;
     }
     setError(null);
@@ -225,6 +240,7 @@ export default function AnalyzeForm() {
               분석할 문자 내용
             </label>
             <textarea
+              ref={textareaRef}
               id="message"
               value={text}
               onChange={(e) => {
@@ -252,7 +268,7 @@ export default function AnalyzeForm() {
               maxLength={MAX_MESSAGE_LENGTH}
               aria-invalid={Boolean(error)}
               aria-describedby={error ? "form-error" : undefined}
-              className="block w-full resize-none rounded-xl border border-line bg-white px-4 pb-16 pt-3.5 text-base text-slate-800 outline-none transition-shadow placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+              className="block w-full resize-none rounded-xl border border-line bg-white px-4 pb-16 pt-3.5 text-base text-slate-800 outline-none transition-[border-color,box-shadow] placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100 aria-[invalid=true]:border-risk-very/50 aria-[invalid=true]:ring-4 aria-[invalid=true]:ring-risk-very-bg"
             />
             <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-center justify-between">
               <span className="text-xs tabular-nums text-slate-500">
@@ -386,7 +402,8 @@ export default function AnalyzeForm() {
       </div>
 
       {error ? (
-        <p id="form-error" role="alert" className="mt-3 text-base font-semibold text-risk-very">
+        <p id="form-error" role="alert" className="animate-fade-in mt-3 flex items-start gap-2 text-base font-semibold text-risk-very">
+          <CircleAlert className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
           {error}
         </p>
       ) : (

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Check, ShieldCheck } from "lucide-react";
 
 const STEPS = [
   "문장 구조를 확인하고 있어요",
@@ -20,6 +21,7 @@ interface AnalysisLoaderProps {
 /**
  * 분석 진행 오버레이.
  * 집중 흐름이므로 화면 전체를 덮어 내비게이션·외부 CTA를 가리고 스크롤을 잠근다.
+ * 부모의 쌓임 맥락(isolate 등)에 갇히지 않도록 body 바로 아래에 그린다.
  */
 export default function AnalysisLoader({ onComplete }: AnalysisLoaderProps) {
   const [step, setStep] = useState(0);
@@ -44,18 +46,29 @@ export default function AnalysisLoader({ onComplete }: AnalysisLoaderProps) {
   const progress = ((step + 1) / STEPS.length) * 100;
   const finished = step === STEPS.length - 1;
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="analysis-loader-title"
-      className="animate-fade-in fixed inset-0 z-[60] flex items-center justify-center bg-surface/95 px-4 backdrop-blur-sm"
+      className="animate-fade-in fixed inset-0 z-[70] flex items-center justify-center bg-surface/95 px-4 backdrop-blur-sm"
     >
-      <div className="w-full max-w-md rounded-2xl border border-line bg-white px-6 py-8 shadow-[var(--shadow-overlay)] md:px-8">
-        <h2 id="analysis-loader-title" className="text-xl font-bold text-navy-900">
+      <div className="animate-fade-up w-full max-w-md rounded-3xl bg-white px-6 pb-8 pt-7 shadow-[var(--shadow-overlay)] md:px-8">
+        {/* 검사 중임을 한눈에 — 방패 주위로 퍼지는 고리 */}
+        <div className="relative mx-auto flex h-16 w-16 items-center justify-center" aria-hidden>
+          {!finished && <span className="scan-ring absolute inset-0 rounded-full bg-brand-200" />}
+          <span
+            className={`relative flex h-16 w-16 items-center justify-center rounded-full text-white transition-colors duration-300 ${
+              finished ? "bg-risk-low" : "bg-brand-600"
+            }`}
+          >
+            {finished ? <Check className="h-8 w-8" strokeWidth={2.5} /> : <ShieldCheck className="h-8 w-8" />}
+          </span>
+        </div>
+        <h2 id="analysis-loader-title" className="mt-5 text-center text-xl font-bold text-navy-900">
           {finished ? "분석이 끝났어요" : "문자를 분석하고 있어요"}
         </h2>
-        <p className="mt-1 text-base text-slate-500">잠시만 기다려주세요.</p>
+        <p className="mt-1 text-center text-base text-slate-500">{finished ? "결과를 보여드릴게요." : "잠시만 기다려주세요."}</p>
 
         <div
           className="mt-5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100"
@@ -94,6 +107,7 @@ export default function AnalysisLoader({ onComplete }: AnalysisLoaderProps) {
           })}
         </ol>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

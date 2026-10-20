@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Check, LifeBuoy, MessageSquareText, X } from "lucide-react";
 import { GOLDEN_RULES, GUIDES } from "@/lib/guides";
 import { keepDots } from "@/lib/typography";
+import GuideNav from "@/components/GuideNav";
 
 export const metadata: Metadata = {
   title: "안전 가이드",
@@ -48,23 +49,7 @@ export default function GuidePage() {
         <h2 id="types-heading" className="text-xl font-bold tracking-tight text-navy-900">
           상황별 대처법
         </h2>
-        <nav aria-label="유형 바로가기" className="-mx-4 mt-3 overflow-x-auto px-4 pb-1 md:mx-0 md:px-0">
-          <ul className="flex w-max gap-2 md:w-auto md:flex-wrap">
-            {GUIDES.map((guide) => (
-              <li key={guide.id}>
-                <a
-                  href={`#${guide.id}`}
-                  className="focus-ring inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-full bg-white py-1 pl-1.5 pr-4 text-base font-semibold text-navy-900 shadow-[var(--shadow-subtle)] ring-1 ring-line hover:ring-brand-200"
-                >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-700">
-                    <guide.icon className="h-4 w-4" aria-hidden />
-                  </span>
-                  {guide.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <GuideNav />
 
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           {GUIDES.map((guide) => (
@@ -72,7 +57,7 @@ export default function GuidePage() {
               key={guide.id}
               id={guide.id}
               aria-labelledby={`${guide.id}-title`}
-              className="card scroll-mt-24 px-5 py-5 transition-shadow target:border-brand-300 target:ring-4 target:ring-brand-100 md:scroll-mt-32 md:px-6"
+              className="card scroll-mt-32 px-5 py-5 transition-shadow target:border-brand-300 target:ring-4 target:ring-brand-100 md:px-6"
             >
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">

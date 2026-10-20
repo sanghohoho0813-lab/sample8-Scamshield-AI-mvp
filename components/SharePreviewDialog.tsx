@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Copy, LockKeyhole, Send, X } from "lucide-react";
 
 interface SharePreviewDialogProps {
@@ -77,8 +78,9 @@ export default function SharePreviewDialog({ text, onClose, onShared, onError }:
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center md:items-center md:p-6" role="presentation">
+  // 화면의 고정 버튼·헤더보다 항상 위에 오도록 body 바로 아래에 그린다
+  return createPortal(
+    <div className="fixed inset-0 z-[70] flex items-end justify-center md:items-center md:p-6" role="presentation">
       <button type="button" aria-label="닫기" tabIndex={-1} onClick={onClose} className="absolute inset-0 bg-navy-900/40" />
       <div
         ref={panelRef}
@@ -129,6 +131,7 @@ export default function SharePreviewDialog({ text, onClose, onShared, onError }:
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

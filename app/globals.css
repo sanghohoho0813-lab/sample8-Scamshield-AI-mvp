@@ -162,6 +162,19 @@ body {
     border-color: #cfd8e8;
   }
 
+  /* 누르는 순간 살짝 눌리는 느낌 — 버튼·타일·선택지 공통 */
+  .btn-primary,
+  .btn-secondary,
+  .press {
+    transition-property: background-color, border-color, box-shadow, transform;
+    transition-duration: 0.15s;
+  }
+  .btn-primary:active:not(:disabled),
+  .btn-secondary:active,
+  .press:active {
+    transform: scale(0.98);
+  }
+
   /* 핵심 실행 버튼 (검사하기·하단 고정 버튼) — 엄지로 누르기 쉬운 56px */
   .btn-lg {
     min-height: 3.5rem;
@@ -331,6 +344,21 @@ body {
   animation: sheet-in 0.22s ease-out both;
 }
 
+/* 분석 중 방패 주위로 퍼지는 고리 */
+@keyframes scan-ring {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+.scan-ring {
+  animation: scan-ring 1.4s ease-out infinite;
+}
+
 @keyframes shimmer {
   from {
     background-position: 200% 0;
@@ -363,6 +391,7 @@ body {
   .animate-fade-in,
   .animate-toast-in,
   .animate-sheet-in,
+  .scan-ring,
   .skeleton {
     animation: none;
   }
@@ -373,7 +402,10 @@ body {
     animation: none;
     opacity: 0;
   }
-  .cta-sweep:hover {
+  .cta-sweep:hover,
+  .btn-primary:active,
+  .btn-secondary:active,
+  .press:active {
     transform: none;
   }
   html {

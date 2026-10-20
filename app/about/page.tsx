@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, Minus } from "lucide-react";
+import { Check, Info, ListChecks, Minus, Smartphone, UsersRound } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "서비스 소개",
@@ -8,18 +8,22 @@ export const metadata: Metadata = {
 
 const PRINCIPLES = [
   {
+    icon: Info,
     title: "판정이 아닌 안내",
     description: "‘100% 사기’ 같은 단정 대신 위험 신호를 알려드리고, 항상 공식 채널에서 다시 확인하도록 안내해요.",
   },
   {
+    icon: ListChecks,
     title: "쉽게, 행동 중심으로",
     description: "어려운 보안 용어 대신 왜 위험한지, 지금 무엇을 하면 되는지를 먼저 보여드려요.",
   },
   {
+    icon: Smartphone,
     title: "받은 그 자리에서",
     description: "문자를 받은 순간 스마트폰에서 바로 붙여넣어 확인할 수 있도록 모바일을 기준으로 설계했어요.",
   },
   {
+    icon: UsersRound,
     title: "가족과 함께",
     description: "부모님이 받은 문자를 자녀가 대신 확인하고, 결과를 메신저로 바로 공유할 수 있어요.",
   },
@@ -58,9 +62,15 @@ export default function AboutPage() {
         </h2>
         <dl className="mt-4 grid gap-x-10 gap-y-6 sm:grid-cols-2">
           {PRINCIPLES.map((p) => (
-            <div key={p.title} className="border-l-2 border-brand-200 pl-4">
-              <dt className="text-lg font-bold text-navy-900">{p.title}</dt>
-              <dd className="mt-1 text-base text-slate-600">{p.description}</dd>
+            <div key={p.title}>
+              {/* dl 구조(dt·dd)를 지키도록 아이콘은 dt 안에 둔다 */}
+              <dt className="flex items-center gap-3 text-lg font-bold text-navy-900">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700" aria-hidden>
+                  <p.icon className="h-5 w-5" />
+                </span>
+                {p.title}
+              </dt>
+              <dd className="mt-1.5 pl-[3.25rem] text-base text-slate-600">{p.description}</dd>
             </div>
           ))}
         </dl>

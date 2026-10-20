@@ -36,7 +36,7 @@ export default function HelpPage() {
         </h2>
         <a
           href={`tel:${primary.tel}`}
-          className="focus-ring mt-3 flex min-h-[4.5rem] items-center gap-4 rounded-2xl bg-navy-900 px-5 py-4 text-white hover:bg-navy-800"
+          className="focus-ring press mt-3 flex min-h-[4.5rem] items-center gap-4 rounded-2xl bg-navy-900 px-5 py-4 text-white hover:bg-navy-800"
         >
           <Phone className="h-6 w-6 shrink-0" aria-hidden />
           <span className="min-w-0 flex-1">

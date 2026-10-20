@@ -56,7 +56,7 @@ export default function HomePage() {
           {/* 이미 행동한 사용자 — 검사보다 대처가 먼저다 */}
           <Link
             href="/help"
-            className="focus-ring group flex min-h-[4.5rem] items-center gap-3.5 rounded-2xl bg-white px-4 py-3.5 shadow-[var(--shadow-subtle)] ring-1 ring-line transition-colors hover:ring-brand-200 lg:col-start-1 lg:mt-4 lg:self-start lg:bg-white/10 lg:shadow-none lg:ring-white/20 lg:hover:bg-white/15"
+            className="focus-ring press group flex min-h-[4.5rem] items-center gap-3.5 rounded-2xl bg-white px-4 py-3.5 shadow-[var(--shadow-subtle)] ring-1 ring-line transition-colors hover:ring-brand-200 lg:col-start-1 lg:mt-4 lg:self-start lg:bg-white/10 lg:shadow-none lg:ring-white/20 lg:hover:bg-white/15"
           >
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700 lg:bg-white/15 lg:text-white">
               <LifeBuoy className="h-6 w-6" aria-hidden />
@@ -112,7 +112,7 @@ export default function HomePage() {
 
 function TypeTile({ href, label, icon, muted = false }: { href: string; label: string; icon: React.ReactNode; muted?: boolean }) {
   return (
-    <Link href={href} className="focus-ring group flex flex-col items-center gap-2 rounded-2xl px-0.5 py-1.5 text-center">
+    <Link href={href} className="focus-ring press group flex flex-col items-center gap-2 rounded-2xl px-0.5 py-1.5 text-center">
       <span
         className={`flex h-[3.75rem] w-[3.75rem] items-center justify-center rounded-[1.25rem] bg-white shadow-[var(--shadow-subtle)] ring-1 ring-line transition-all group-hover:-translate-y-0.5 group-hover:ring-brand-200 ${
           muted ? "text-slate-500" : "text-brand-600"

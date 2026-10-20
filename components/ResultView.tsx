@@ -52,6 +52,8 @@ import SharePreviewDialog from "./SharePreviewDialog";
 
 interface ResultViewProps {
   entry: HistoryEntry;
+  /** 방금 검사한 결과 — 결론 카드가 부드럽게 떠오른다 */
+  fresh?: boolean;
   /** 화면 안내 메시지 (페이지의 토스트 하나를 공유) */
   notify: (message: string, tone?: "success" | "info") => void;
 }
@@ -74,7 +76,7 @@ const STATUS: Record<RiskLevel, { icon: LucideIcon; label: string }> = {
   low: { icon: ShieldCheck, label: "위험 낮음" },
 };
 
-export default function ResultView({ entry: initialEntry, notify: show }: ResultViewProps) {
+export default function ResultView({ entry: initialEntry, fresh = false, notify: show }: ResultViewProps) {
   const router = useRouter();
   const [entry, setEntry] = useState(initialEntry);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -115,7 +117,7 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
     <div className="grid gap-4 md:gap-5 lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
       {/* 결론 + 지금 할 일 */}
       <aside className="flex flex-col gap-4 lg:sticky lg:top-32">
-        <section className="card px-5 pb-5 pt-5 md:px-6" aria-labelledby="verdict-heading">
+        <section className={`card px-5 pb-5 pt-5 md:px-6 ${fresh ? "animate-fade-up" : ""}`} aria-labelledby="verdict-heading">
           <p className={`flex items-center gap-2 text-base font-bold ${style.text}`}>
             <span className={`flex h-9 w-9 items-center justify-center rounded-full ${style.bg}`}>
               <status.icon className="h-5 w-5" aria-hidden />
@@ -208,7 +210,7 @@ export default function ResultView({ entry: initialEntry, notify: show }: Result
             </h2>
             <p className="mt-1 text-base text-slate-500">상황을 고르면 지금 할 일을 순서대로 알려드려요.</p>
             <div className="mt-4">
-              <RecoveryPicker />
+              <RecoveryPicker compact />
             </div>
             <Link href="/help" className="focus-ring mt-3 inline-flex min-h-11 items-center gap-1 rounded-lg text-base font-semibold text-brand-700">
               신고·상담 전화번호 모두 보기
