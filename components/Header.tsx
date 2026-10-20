@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Settings, ShieldCheck } from "lucide-react";
 import DateTimeBar from "./DateTimeBar";
+import FontSizeButton from "./FontSizeButton";
 
 const NAV_ITEMS = [
   { href: "/", label: "문자 검사", match: (p: string) => p === "/" },
@@ -37,35 +38,48 @@ export default function Header() {
           <span className={`text-lg font-bold tracking-tight md:text-navy-900 ${onBrand ? "text-white" : "text-navy-900"}`}>ScamShield</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="주요 메뉴">
-          {NAV_ITEMS.map((item) => {
-            const active = item.match(pathname);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={`focus-ring rounded-lg px-3.5 py-2 text-base font-semibold transition-colors ${
-                  active ? "text-brand-700" : "text-slate-500 hover:text-navy-900"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-          <span className="mx-2 h-5 w-px bg-line" aria-hidden />
-          <Link
-            href="/my"
-            aria-current={settingsActive ? "page" : undefined}
-            className={`focus-ring flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-              settingsActive ? "text-brand-700" : "text-slate-500 hover:text-navy-900"
-            }`}
-          >
+        {/* 모바일: 메뉴는 하단 탭이 맡고, 헤더 오른쪽에는 글자 크기 빠른 전환만 둔다 */}
+        <div className="md:hidden">
+          <FontSizeButton onBrand={onBrand} />
+        </div>
+
+        {/* 데스크톱: 지금 있는 메뉴는 헤더 아래 선에 붙은 밑줄로 표시 */}
+        <nav className="hidden self-stretch md:flex" aria-label="주요 메뉴">
+          {NAV_ITEMS.map((item) => (
+            <NavLink key={item.href} href={item.href} active={item.match(pathname)}>
+              {item.label}
+            </NavLink>
+          ))}
+          <span className="mx-2 h-5 w-px self-center bg-line" aria-hidden />
+          <div className="flex items-center">
+            <FontSizeButton />
+          </div>
+          <NavLink href="/my" active={settingsActive}>
             <Settings className="h-4 w-4" aria-hidden />
             설정
-          </Link>
+          </NavLink>
         </nav>
       </div>
     </header>
+  );
+}
+
+function NavLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={`focus-ring group relative flex items-center gap-1.5 px-3.5 text-base font-semibold transition-colors focus-visible:outline-offset-[-10px] ${
+        active ? "text-brand-700" : "text-slate-500 hover:text-navy-900"
+      }`}
+    >
+      {children}
+      <span
+        className={`absolute inset-x-3 bottom-0 h-[3px] rounded-t-full transition-colors ${
+          active ? "bg-brand-600" : "bg-transparent group-hover:bg-slate-200"
+        }`}
+        aria-hidden
+      />
+    </Link>
   );
 }

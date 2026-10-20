@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Copy, LockKeyhole, Send, X } from "lucide-react";
+import { useModal } from "./useModal";
 
 interface SharePreviewDialogProps {
   text: string;
@@ -22,36 +23,11 @@ export default function SharePreviewDialog({ text, onClose, onShared, onError }:
   const [canShare, setCanShare] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
+  useModal(panelRef, onClose);
+
   useEffect(() => {
     setCanShare(typeof navigator.share === "function");
-    const opener = document.activeElement as HTMLElement | null;
-    const { overflow } = document.body.style;
-    document.body.style.overflow = "hidden";
-    panelRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      // 창이 열려 있는 동안 Tab 이동이 뒤 화면으로 빠져나가지 않게 한다
-      if (e.key === "Tab" && panelRef.current) {
-        const focusables = panelRef.current.querySelectorAll<HTMLElement>("button:not([disabled]), [tabindex='0']");
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-        const active = document.activeElement;
-        if (e.shiftKey && (active === first || active === panelRef.current)) {
-          e.preventDefault();
-          last?.focus();
-        } else if (!e.shiftKey && active === last) {
-          e.preventDefault();
-          first?.focus();
-        }
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = overflow;
-      opener?.focus();
-    };
-  }, [onClose]);
+  }, []);
 
   const copy = async () => {
     setBusy(true);
@@ -118,7 +94,8 @@ export default function SharePreviewDialog({ text, onClose, onShared, onError }:
           </p>
         </div>
 
-        <div className="flex flex-col gap-2.5 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-4 md:px-6 md:pb-6">
+        {/* sticky: 공통 이동 버튼이 이 영역을 고정 요소로 알아보고 피해 간다 */}
+        <div className="sticky bottom-0 flex flex-col gap-2.5 rounded-b-3xl bg-white px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-4 md:px-6 md:pb-6">
           {canShare && (
             <button type="button" onClick={share} disabled={busy} className="btn-primary w-full">
               <Send className="h-5 w-5" aria-hidden />

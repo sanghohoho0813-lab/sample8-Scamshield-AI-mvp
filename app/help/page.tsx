@@ -4,6 +4,7 @@ import { ExternalLink, Phone, ScanSearch, ShieldBan } from "lucide-react";
 import RecoveryPicker from "@/components/RecoveryPicker";
 import { CONTACT_LIST } from "@/lib/recovery";
 import { keepDots } from "@/lib/typography";
+import PageHeader from "@/components/PageHeader";
 
 export const metadata: Metadata = {
   title: "피해 대응",
@@ -19,11 +20,9 @@ export default function HelpPage() {
   const [primary, ...others] = CONTACT_LIST;
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 md:px-6 md:py-10">
-      <p className="text-sm font-bold text-brand-700">피해 대응</p>
-      <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 md:text-3xl">이미 링크를 눌렀거나 돈을 보냈나요?</h1>
-      <p className="mt-2 text-base text-slate-600">
+      <PageHeader eyebrow="피해 대응" title="이미 링크를 눌렀거나 돈을 보냈나요?">
         당황하지 않아도 돼요. 어떤 상황인지 고르면 지금 할 일을 순서대로 알려드려요.
-      </p>
+      </PageHeader>
 
       <section aria-label="상황별 대처" className="card mt-6 px-4 py-5 md:px-6">
         <RecoveryPicker syncHash idPrefix="help" />

@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, CircleAlert, ClipboardPaste, ImageUp, MessageSquareText, RefreshCw, Trash2, X } from "lucide-react";
+import { ChevronDown, CircleAlert, CircleHelp, ClipboardPaste, ImageUp, MessageSquareText, RefreshCw, Trash2, X } from "lucide-react";
 import type { AnalysisResult } from "@/lib/types";
 import { analyzeMessage } from "@/lib/ai";
 import { saveAnalysis } from "@/lib/storage";
 import { MAX_MESSAGE_LENGTH } from "@/lib/constants";
 import { DEMO_EXTRACTED_TEXT, FEATURED_SAMPLES, SAMPLE_MESSAGES } from "@/lib/samples";
 import AnalysisLoader from "./AnalysisLoader";
+import HowToSheet from "./HowToSheet";
 
 type Mode = "text" | "image";
 type OcrStatus = "idle" | "reading" | "ready";
@@ -49,6 +50,8 @@ export default function AnalyzeForm() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [samplesOpen, setSamplesOpen] = useState(false);
+  const [howToOpen, setHowToOpen] = useState(false);
+  const closeHowTo = useCallback(() => setHowToOpen(false), []);
   const [submitting, setSubmitting] = useState(false);
   const pendingRef = useRef<Promise<AnalysisResult> | null>(null);
   const submittingRef = useRef(false);
@@ -60,6 +63,7 @@ export default function AnalyzeForm() {
       setMode("text");
       setText(sample.text);
       setSamplesOpen(true);
+      setNotice(`‘${sample.label}’ 예시를 채웠어요. 아래 검사하기를 눌러보세요.`);
       return;
     }
     try {
@@ -210,7 +214,8 @@ export default function AnalyzeForm() {
   return (
     <div className="card border-transparent p-4 shadow-[var(--shadow-raised)] md:p-6">
       {/* 입력 방식 */}
-      <div className="grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1" role="tablist" aria-label="입력 방식">
+      {/* 좁은 화면 + 큰 글자에서는 아이콘을 빼고 이름만 한 줄로 */}
+      <div className="@container grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1" role="tablist" aria-label="입력 방식">
         {(
           [
             ["text", "문자 입력", MessageSquareText],
@@ -223,22 +228,39 @@ export default function AnalyzeForm() {
             role="tab"
             aria-selected={mode === value}
             onClick={() => switchMode(value)}
-            className={`focus-ring flex min-h-12 items-center justify-center gap-2 rounded-lg text-base font-semibold transition-colors ${
+            className={`focus-ring flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-lg text-base font-semibold transition-colors ${
               mode === value ? "bg-white text-navy-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            <Icon className="h-5 w-5" aria-hidden />
+            <Icon className="hidden h-5 w-5 shrink-0 @min-[16rem]:block" aria-hidden />
             {label}
           </button>
         ))}
       </div>
 
-      <div className="mt-4">
+      {/* 입력칸 이름 + 복사·캡처 방법 — 붙여넣기가 낯선 분이 가장 먼저 막히는 곳 */}
+      <div className="mt-4 flex min-h-7 items-center justify-between gap-3">
+        {mode === "text" ? (
+          <label htmlFor="message" className="text-sm font-bold text-slate-600">
+            받은 문자
+          </label>
+        ) : (
+          <span className="text-sm font-bold text-slate-600">문자 캡처</span>
+        )}
+        <button
+          type="button"
+          onClick={() => setHowToOpen(true)}
+          aria-haspopup="dialog"
+          className="focus-ring -my-2 -mr-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-semibold text-brand-700 hover:bg-brand-50"
+        >
+          <CircleHelp className="h-4 w-4" aria-hidden />
+          {mode === "text" ? "복사하는 법" : "캡처하는 법"}
+        </button>
+      </div>
+
+      <div className="mt-2">
         {mode === "text" ? (
           <div className="relative">
-            <label htmlFor="message" className="sr-only">
-              분석할 문자 내용
-            </label>
             <textarea
               ref={textareaRef}
               id="message"
@@ -442,6 +464,7 @@ export default function AnalyzeForm() {
                     onClick={() => {
                       setText(sample.text);
                       setError(null);
+                      setNotice(null);
                     }}
                     className={`focus-ring min-h-11 rounded-full border px-4 text-base font-semibold transition-colors ${
                       selected
@@ -459,6 +482,7 @@ export default function AnalyzeForm() {
       )}
 
       {submitting && <AnalysisLoader onComplete={handleLoaderComplete} />}
+      {howToOpen && <HowToSheet topic={mode === "text" ? "copy" : "capture"} onClose={closeHowTo} />}
     </div>
   );
 }

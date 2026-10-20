@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Inbox, X } from "lucide-react";
+import { X } from "lucide-react";
 import type { HistoryEntry, RiskLevel, ScamType } from "@/lib/types";
 import { getHistory, restoreDemoHistory } from "@/lib/storage";
 import { SCAM_TYPE_LABELS } from "@/lib/risk-engine";
@@ -10,6 +10,8 @@ import HistoryRow from "@/components/HistoryRow";
 import { formatDayGroup, formatTime } from "@/lib/format";
 import { typeName } from "@/lib/verdict";
 import { useToast } from "@/components/Toast";
+import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/PageHeader";
 
 type LevelFilter = "all" | "danger" | "caution" | "low";
 
@@ -59,12 +61,11 @@ export default function HistoryPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 md:px-6 md:py-10">
-      <h1 className="text-2xl font-bold tracking-tight text-navy-900 md:text-3xl">분석 기록</h1>
-      <p className="mt-1.5 text-base text-slate-500">
+      <PageHeader title="분석 기록">
         {entries && entries.length > 0
           ? `검사 ${entries.length}건 · 눌러서 결과를 다시 볼 수 있어요.`
           : "검사한 문자의 결과를 다시 확인할 수 있어요."}
-      </p>
+      </PageHeader>
 
       <div className="mt-6">
         {entries === null ? (
@@ -83,19 +84,19 @@ export default function HistoryPage() {
             </div>
           </div>
         ) : entries.length === 0 ? (
-          <div className="card flex flex-col items-center px-6 py-14 text-center">
-            <Inbox className="h-10 w-10 text-slate-300" aria-hidden />
-            <h2 className="mt-4 text-lg font-bold text-navy-900">아직 검사한 문자가 없어요</h2>
-            <p className="mt-1.5 text-base text-slate-500">의심스러운 문자를 넣고 위험 신호를 확인해보세요.</p>
-            <div className="mt-6 flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
-              <Link href="/" className="btn-primary">
-                첫 문자 검사하기
-              </Link>
-              <button type="button" onClick={restore} className="btn-secondary">
-                예시 기록 불러오기
-              </button>
-            </div>
-          </div>
+          <EmptyState
+            art="inbox"
+            title="아직 검사한 문자가 없어요"
+            description="의심스러운 문자를 넣고 위험 신호를 확인해보세요. 검사 기록은 이 기기에만 남아요."
+            className="card px-6 py-12"
+          >
+            <Link href="/" className="btn-primary">
+              첫 문자 검사하기
+            </Link>
+            <button type="button" onClick={restore} className="btn-secondary">
+              예시 기록 불러오기
+            </button>
+          </EmptyState>
         ) : (
           <div className="animate-fade-in">
             {/* 위험 정도로 거르기 */}

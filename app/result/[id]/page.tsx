@@ -3,11 +3,12 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, SearchX } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import type { HistoryEntry } from "@/lib/types";
 import { getHistoryEntry } from "@/lib/storage";
 import { formatWhen } from "@/lib/format";
 import ResultView from "@/components/ResultView";
+import EmptyState from "@/components/EmptyState";
 import { useToast } from "@/components/Toast";
 
 export default function ResultPage({ params }: { params: Promise<{ id: string }> }) {
@@ -53,21 +54,20 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
       )}
 
       {entry === null && (
-        <div className="card mx-auto flex max-w-lg flex-col items-center px-6 py-14 text-center">
-          <SearchX className="h-10 w-10 text-slate-300" aria-hidden />
-          <h1 className="mt-4 text-lg font-bold text-navy-900">검사 결과를 찾을 수 없어요</h1>
-          <p className="mt-1.5 text-base text-slate-500">
-            삭제되었거나 다른 기기·브라우저에서 검사한 결과일 수 있어요. 기록은 검사한 기기에만 저장돼요.
-          </p>
-          <div className="mt-6 flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
-            <Link href="/" className="btn-primary">
-              문자 검사하기
-            </Link>
-            <Link href="/history" className="btn-secondary">
-              분석 기록 보기
-            </Link>
-          </div>
-        </div>
+        <EmptyState
+          art="missing"
+          as="h1"
+          title="검사 결과를 찾을 수 없어요"
+          description="삭제되었거나 다른 기기·브라우저에서 검사한 결과일 수 있어요. 기록은 검사한 기기에만 저장돼요."
+          className="card mx-auto max-w-lg px-6 py-12"
+        >
+          <Link href="/" className="btn-primary">
+            문자 검사하기
+          </Link>
+          <Link href="/history" className="btn-secondary">
+            분석 기록 보기
+          </Link>
+        </EmptyState>
       )}
 
       {entry && <ResultView key={entry.id} entry={entry} fresh={isNew} notify={show} />}

@@ -48,7 +48,7 @@ export default function AboutPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 md:px-6 md:py-10">
       <p className="text-sm font-bold text-brand-700">서비스 소개</p>
-      <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">
+      <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight text-navy-900 md:text-3xl">
         의심 문자 앞에서, 몇 초 안에 판단을 도와드려요
       </h1>
       <p className="mt-3 text-base text-slate-600 md:text-lg">

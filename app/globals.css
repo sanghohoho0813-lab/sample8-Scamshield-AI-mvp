@@ -344,6 +344,20 @@ body {
   animation: sheet-in 0.22s ease-out both;
 }
 
+/* 점수 근거 막대: 펼칠 때 기준선에서 자라난다 */
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.bar-grow {
+  transform-origin: left center;
+  animation: bar-grow 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
 /* 분석 중 방패 주위로 퍼지는 고리 */
 @keyframes scan-ring {
   from {
@@ -391,6 +405,7 @@ body {
   .animate-fade-in,
   .animate-toast-in,
   .animate-sheet-in,
+  .bar-grow,
   .scan-ring,
   .skeleton {
     animation: none;

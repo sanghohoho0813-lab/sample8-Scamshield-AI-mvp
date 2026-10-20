@@ -94,6 +94,8 @@ export default function ResultView({ entry: initialEntry, fresh = false, notify:
   const explanations = riskExplanations(r);
   const highlights = visibleHighlights(r);
   const { items: scoreItems, approximate } = scoreBreakdown(r);
+  /** 막대 길이 기준 — 가장 큰 항목이 가득 찬다 */
+  const maxPoints = Math.max(1, ...scoreItems.map((item) => item.points));
 
   const closeShare = useCallback(() => setShareText(null), []);
   const handleShared = (method: "share" | "copy") => {
@@ -332,11 +334,22 @@ export default function ResultView({ entry: initialEntry, fresh = false, notify:
                   <tbody className="divide-y divide-line">
                     {scoreItems.map((item, i) => (
                       <tr key={`${item.label}-${i}`}>
-                        <th scope="row" className={`py-2.5 pr-3 text-left font-normal ${item.sub ? "pl-4 text-slate-500" : "text-slate-700"}`}>
-                          {item.sub && <span aria-hidden>└ </span>}
-                          {item.label}
+                        <th scope="row" className={`py-3 pr-3 text-left font-normal ${item.sub ? "pl-4 text-slate-500" : "text-slate-700"}`}>
+                          <span className="block">
+                            {item.sub && <span aria-hidden>└ </span>}
+                            {item.label}
+                          </span>
+                          {/* 항목끼리 크기를 견주는 막대 — 숫자는 오른쪽 칸에 그대로 있어 막대는 보조 */}
+                          <span className="mt-1.5 block h-2 rounded-r-[4px] bg-slate-100" aria-hidden>
+                            <span
+                              className={`bar-grow block h-full rounded-r-[4px] ${item.sub ? "bg-brand-300" : "bg-brand-600"}`}
+                              style={{ width: `${Math.max(3, (item.points / maxPoints) * 100)}%` }}
+                            />
+                          </span>
                         </th>
-                        <td className={`whitespace-nowrap py-2.5 text-right tabular-nums ${item.sub ? "text-slate-500" : "font-semibold text-navy-900"}`}>
+                        <td
+                          className={`whitespace-nowrap py-3 text-right align-top tabular-nums ${item.sub ? "text-slate-500" : "font-semibold text-navy-900"}`}
+                        >
                           +{item.points}
                         </td>
                       </tr>

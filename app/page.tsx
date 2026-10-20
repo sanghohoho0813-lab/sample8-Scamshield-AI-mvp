@@ -48,7 +48,8 @@ export default function HomePage() {
           </div>
 
           <div className="relative -mt-24 lg:row-span-2 lg:mt-0">
-            <Suspense fallback={<div className="card h-[26rem] p-6 shadow-[var(--shadow-raised)]" aria-hidden />}>
+            {/* 자리 표시 높이 = 실제 입력 카드 높이 (불러온 뒤 아래 내용이 밀리지 않게) */}
+            <Suspense fallback={<div className="card h-[31rem] p-6 shadow-[var(--shadow-raised)] md:h-[32rem]" aria-hidden />}>
               <AnalyzeForm />
             </Suspense>
           </div>

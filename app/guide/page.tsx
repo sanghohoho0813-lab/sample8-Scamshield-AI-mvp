@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, LifeBuoy, MessageSquareText, X } from "lucide-react";
+import { ArrowRight, Check, LifeBuoy, MessageSquareText, ScanSearch, X } from "lucide-react";
 import { GOLDEN_RULES, GUIDES } from "@/lib/guides";
 import { keepDots } from "@/lib/typography";
 import GuideNav from "@/components/GuideNav";
+import PageHeader from "@/components/PageHeader";
 
 export const metadata: Metadata = {
   title: "안전 가이드",
@@ -12,8 +13,7 @@ export const metadata: Metadata = {
 export default function GuidePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-10">
-      <h1 className="text-2xl font-bold tracking-tight text-navy-900 md:text-3xl">안전 가이드</h1>
-      <p className="mt-1.5 max-w-2xl text-base text-slate-500">상황별로 자주 오는 문자와 확인 방법, 하지 말아야 할 행동을 정리했어요.</p>
+      <PageHeader title="안전 가이드">상황별로 자주 오는 문자와 확인 방법, 하지 말아야 할 행동을 정리했어요.</PageHeader>
 
       <Link
         href="/help"
@@ -78,6 +78,16 @@ export default function GuidePage() {
                 <p className="mt-2 max-w-[94%] rounded-2xl rounded-tl-md bg-white px-4 py-3 text-base text-slate-800 shadow-[var(--shadow-subtle)] ring-1 ring-line [overflow-wrap:anywhere]">
                   {keepDots(guide.example)}
                 </p>
+                {/* 읽기만 하면 와닿지 않으니, 같은 유형 예시를 입력칸에 채워 직접 검사해보게 한다 */}
+                <Link
+                  href={`/?sample=${guide.sampleId}`}
+                  className="focus-ring -mb-1 mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-1 text-sm font-semibold text-brand-700 hover:text-brand-800"
+                >
+                  <ScanSearch className="h-4 w-4" aria-hidden />
+                  비슷한 예시로 검사해보기
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                  <span className="sr-only">({guide.title})</span>
+                </Link>
               </div>
 
               <div className="mt-4 grid gap-4 border-t border-line pt-4 sm:grid-cols-2">

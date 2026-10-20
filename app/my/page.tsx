@@ -5,14 +5,13 @@ import Link from "next/link";
 import { Check, ChevronRight, Cpu, History, Info, RotateCcw, ScanText, ShieldAlert, Trash2, type LucideIcon } from "lucide-react";
 import type { FontScale } from "@/lib/types";
 import { useSettings } from "@/lib/settings";
+import { FONT_SCALES } from "@/lib/font-scale";
 import { clearHistory, getHistory, restoreDemoHistory } from "@/lib/storage";
 import { useToast } from "@/components/Toast";
+import PageHeader from "@/components/PageHeader";
 
-const FONT_OPTIONS: { value: FontScale; label: string; size: string }[] = [
-  { value: "normal", label: "보통", size: "text-base" },
-  { value: "large", label: "크게", size: "text-lg" },
-  { value: "x-large", label: "아주 크게", size: "text-xl" },
-];
+const PREVIEW_SIZE: Record<FontScale, string> = { normal: "text-base", large: "text-lg", "x-large": "text-xl" };
+const FONT_OPTIONS = FONT_SCALES.map((s) => ({ ...s, size: PREVIEW_SIZE[s.value] }));
 
 type Pending = "clear" | "restore" | null;
 
@@ -40,7 +39,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 md:px-6 md:py-10">
-      <h1 className="text-2xl font-bold tracking-tight text-navy-900 md:text-3xl">설정</h1>
+      <PageHeader title="설정">글자 크기와 이 기기에 저장된 기록을 관리해요.</PageHeader>
 
       {/* 글자 크기 */}
       <section aria-labelledby="font-heading" className="mt-7">
